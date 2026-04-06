@@ -40,7 +40,7 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-    //MySQL connector
+    //MySQL Connector
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
     //Lombok
