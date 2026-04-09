@@ -2,7 +2,26 @@
 
 ## 1. 부하 테스트 기반 문제 발견
 
-- 부하테스트 사진 첨부
+#### **[k6 대시보드 - TPS]**
+
+<img src="https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/%EA%B2%8C%EC%8B%9C%ED%8C%90%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EB%AF%B8%EC%A0%81%EC%9A%A9(TPS).png" width="50%" height="auto">
+
+- TPS: VU는 증가하지만 TPS는 0.5 ~ 2 TPS
+
+#### **[k6 대시보드 - Latency, Request Fail]**  
+<img src="https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/%EA%B2%8C%EC%8B%9C%ED%8C%90%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EB%AF%B8%EC%A0%81%EC%9A%A9(Latency%2C%20Request%20fail).png" width="100%" height="auto">
+
+- Latency: 계속 증가하는 추세
+- Request Fail: 시간 지날 수록 증가하는 추세
+
+#### **[EC2 / RDS - CPU, Memory 사용률]**  
+<img src="https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/%EA%B2%8C%EC%8B%9C%ED%8C%90%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EB%AF%B8%EC%A0%81%EC%9A%A9(CPU%2C%20Memory).png" width="90%" height="auto"> 
+
+- **EC2**: CPU 사용률, Memory 사용률 여유있음
+- **RDS**: CPU 사용률, 사용 가능한 Memory 여유 있음
+
+
+
 
 ## 2. 병목 원인 분석
 
