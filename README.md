@@ -93,6 +93,8 @@ WHERE
 ![k6 로그](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/k6%20Request%20timeout(%EA%B0%9C%EC%84%A0%20%EC%A0%84).png)
 - Request timeout으로 인한 Request Failed 발생
 
+<br>
+
 - 이를 통해 요청 대기(Queue)로 인한 병목 발생으로 판단
 
 <br>
@@ -176,6 +178,7 @@ Table scan on b (actual time=2.16..1594 rows=1e+6 loops=1)
 약 100만 건(rows=1e+6) 풀테이블 스캔
 - 소요 시간: **약 1.6초**
 
+<br>
 
 - 메인 쿼리에서 **약 90만 건 정렬**이 주요 병목임을 확인
 - COUNT 쿼리에서 **풀테이블 스캔**이 주요 병목임을 확인
@@ -296,15 +299,15 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 
 <br>
 
-- 멀티 컬럼 인덱스로 ‘메인 쿼리’ 및 ‘COUNT 쿼리’ 의 성능을 개선 가능
-- 인덱스 기반 필터링으로 불필요한 테이블 접근을 최소화 시킬 수 있어 멀티 컬럼 인덱스를 적용하기로 판단
+- **멀티 컬럼 인덱스로 ‘메인 쿼리’ 및 ‘COUNT 쿼리’ 의 성능을 개선 가능**
+- **인덱스 기반 필터링으로 불필요한 테이블 접근을 최소화 시킬 수 있어 멀티 컬럼 인덱스를 적용하기로 판단**
 
 <br>
 
 ### [부하 테스트 재검증]
 #### k6 대시보드 Latency 평균 수치
 ![k6 대시보드 Latency 평균 수치](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/k6%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20Latency.png)
-- Latency: 평균 12s → 평균 720ms   (약 16배 개선)
+- Latency: **평균 12s → 평균 720ms   (약 16배 개선)**
 
 <br>
 
@@ -336,6 +339,7 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
     - 약 90만 건의 데이터 스캔으로 약 0.4초가 소요되는 COUNT 쿼리를 개선한다면
       RDS 부하를 줄일 수 있을 것으로 판단
 
+<br>
 
 - OFFSET 기반 페이징에서 페이지 증가 시 성능 저하가 발생하는 문제를 확인
 
@@ -346,7 +350,8 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 <br>
 
 ```sql
-Index lookup on b using idx_board_deleted_at_created_date_desc (deleted_at=NULL), with index condition: (b.deleted_at is null) (actual time=0.766..957 rows=5010 loops=1)
+Index lookup on b using idx_board_deleted_at_created_date_desc (deleted_at=NULL), with index condition: (b.deleted_at is null) 
+(actual time=0.766..957 rows=5010 loops=1)
 ```
 - 인덱스가 적용되어 있어도 5010건(`rows=5010`)의 데이터 스캔
 
