@@ -308,7 +308,7 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 ```
 
 - 기존 풀테이블 스캔: **1594ms**
-- 인덱스 적용 후: **0.271ms (약 5800배 개선)**
+- 인덱스 적용 후: **271ms (약 5.8배 개선)**
 
 <br>
 
