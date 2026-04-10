@@ -165,7 +165,7 @@ spring:
 Table scan on b (actual time=0.767..481 rows=1e+6 loops=1)
 ``` 
 약 100만 건(`rows=1e+6`) 풀테이블 스캔
-- 소요 시간: **0.481ms**
+- 소요 시간: **481ms → 약 0.5초**
 
 <br>
 
@@ -178,9 +178,9 @@ Filter: (b.deleted_at is null) (actual time=0.768..558 rows=899962 loops=1)
 ```
 
 약 90만 건(`rows=899962`) 정렬
-- 정렬 전 WHERE절 조건 필터링까지 소요 시간: **0.558ms**
+- 정렬 전 WHERE절 조건 필터링까지 소요 시간: **558ms**
 - 필터링 후 남은 rows: **약 90만**
-- 정렬 소요 시간: 2861ms - 0.558ms = 약 2860ms → **약 2.8초**
+- 정렬 소요 시간: 2861ms - 558ms = 2303ms → **약 2.3초**
 
 <br>
 
@@ -193,7 +193,7 @@ Table scan on b (actual time=2.16..1594 rows=1e+6 loops=1)
 
 <br>
 
-- 메인 쿼리에서 **약 90만 건 정렬**이 주요 병목임을 확인
+- 메인 쿼리에서 **풀테이블 스캔**과 **약 90만 건 정렬**이 주요 병목임을 확인
 - COUNT 쿼리에서 **풀테이블 스캔**이 주요 병목임을 확인
 
 <br>
@@ -203,7 +203,7 @@ Table scan on b (actual time=2.16..1594 rows=1e+6 loops=1)
 ```sql
 CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 ```
-- 메인 쿼리의 주요 병목인 **정렬 작업을 제거하기 위해** ORDER BY절에 사용하는 컬럼에 인덱스 적용
+- 메인 쿼리의 주요 병목인 **풀테이블 스캔**과 **정렬 작업을 제거하기 위해** ORDER BY절에 사용하는 컬럼에 인덱스 적용
 
 <br>
 
@@ -236,7 +236,7 @@ CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 Index scan on b using idx_board_created_date_desc (actual time=0.055..0.098 rows=13 loops=1)
 ```
 - 약 100만 건(`rows=1e+6`) 풀테이블 스캔 → `rows=13`으로 데이터 스캔 양 감소
-- 소요 시간: **기존 0.481ms → 0.098ms (약 5배 개선)**
+- 소요 시간: **기존 481ms → 0.098ms (약 4900배 개선)**
 
 <br>
 
