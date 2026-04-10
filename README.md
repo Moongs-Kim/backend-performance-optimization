@@ -189,7 +189,7 @@ Filter: (b.deleted_at is null) (actual time=0.768..558 rows=899962 loops=1)
 Table scan on b (actual time=2.16..1594 rows=1e+6 loops=1)
 ``` 
 약 100만 건(`rows=1e+6`) 풀테이블 스캔
-- 소요 시간: **약 1.6초**
+- 소요 시간: **1594ms → 약 1.6초**
 
 <br>
 
@@ -207,12 +207,12 @@ CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 
 <br>
 
-|     | 기존 응답 소요 시간  | 단일 컬럼 인덱스 적용 응답 소요 시간  | 소요 시간 이미지  |
-|:---:|:------------:|:----------------------:|:----------:|
-| 메인 쿼리 | 약 2.8초 |        약 0.008초        | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%8B%A8%EC%9D%BC%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
-| COUNT 쿼리 | 약 1.7초 |         약 1.7초         | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%B9%B4%EC%9A%B4%ED%8A%B8%20%EC%BF%BC%EB%A6%AC%20%EB%8B%A8%EC%9D%BC%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
+|     | 기존 응답 소요 시간  | 단일 컬럼 인덱스 적용 응답 소요 시간 | 소요 시간 이미지  |
+|:---:|:------------:|:---------------------:|:----------:|
+| 메인 쿼리 | 약 2.8초 |       약 0.007초        | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%8B%A8%EC%9D%BC%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
+| COUNT 쿼리 | 약 1.7초 |        약 1.7초         | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%B9%B4%EC%9A%B4%ED%8A%B8%20%EC%BF%BC%EB%A6%AC%20%EB%8B%A8%EC%9D%BC%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
 
-- 메인쿼리: **약 2.8초 → 약 0.008초 (약 350배 개선)**
+- 메인쿼리: **약 2.8초 → 약 0.007초 (약 400배 개선)**
 - COUNT 쿼리: **차이 미미**
 
 <br>
@@ -255,10 +255,10 @@ CREATE INDEX idx_board_deleted_at_created_date_desc ON board (deleted_at, create
 
 <br>
 
-|     | 단일 컬럼 인덱스 적용 응답 소요 시간  | 멀티 컬럼 인덱스 적용 응답 소요 시간 | 소요 시간 이미지  |
-|:---:|:----------------------:|:---------------------:|:----------:|
-| 메인 쿼리 |        약 0.008초        |       약 0.007초        | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
-|COUNT 쿼리 |         약 1.7초         |        약 0.4초         | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%B9%B4%EC%9A%B4%ED%8A%B8%20%EC%BF%BC%EB%A6%AC%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
+|     | 단일 컬럼 인덱스 적용 응답 소요 시간 | 멀티 컬럼 인덱스 적용 응답 소요 시간 | 소요 시간 이미지  |
+|:---:|:---------------------:|:---------------------:|:----------:|
+| 메인 쿼리 |       약 0.007초        |       약 0.007초        | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
+|COUNT 쿼리 |        약 1.7초         |        약 0.4초         | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%B9%B4%EC%9A%B4%ED%8A%B8%20%EC%BF%BC%EB%A6%AC%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
 
 
 - 메인쿼리: **차이 미미**
