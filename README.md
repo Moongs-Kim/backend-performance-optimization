@@ -573,7 +573,9 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
     ```sql
     Table scan on b (actual time=2.96..1449 rows=1e+6 loops=1) 
     ```
+   
    <br>
+
    - 상관 서브쿼리
    ```sql
    Table scan on b (actual time=1.61..1476 rows=1e+6 loops=1)
@@ -592,7 +594,9 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    (deleted_at=NULL), with index condition: (b.deleted_at is null) 
    (actual time=1.59..5874 rows=899962 loops=1)
    ```
+   
    <br>
+   
    - 상관 서브쿼리
    ```sql
    Index lookup on b using idx_board_deleted_at 
@@ -614,13 +618,17 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    Sort: (select #3) DESC, b.board_id (actual time=6727..6727 rows=10 loops=1)
     ```
    - 정렬 작업 먼저 진행 후 10개 데이터(`rows=10`)로 데이터 양 감소
+   
    <br>
+   
    ```sql
    Single-row index lookup on m using PRIMARY (member_id=b.member_id)
    (actual time=1.92..1.92 rows=1 loops=10)
    ```
    - member 테이블 탐색 10번(`loops=10`)
+   
    <br>
+   
    ```sql
    Nested loop inner join (actual time=6747..6748 rows=10 loops=1)
    ```
@@ -633,11 +641,17 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
     Filter: (b.deleted_at is null) (actual time=2.97..1596 rows=899962 loops=1)
     ```
    - WHERE절 조건으로 필터링 후 남은 데이터 수 약 90만 건(`rows=899962`)
+
+   <br>
+
    ```sql
    Single-row index lookup on m using PRIMARY (member_id=b.member_id) 
    (actual time=0.0793..0.0794 rows=1 loops=899962)
    ```
    - member 테이블 탐색 약 90만(`loops=899962`)
+
+   <br>
+
    ```sql
    Nested loop inner join (actual time=3.58..73241 rows=899962 loops=1)
    ```
