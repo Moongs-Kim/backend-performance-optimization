@@ -486,11 +486,11 @@ Single-row index lookup on m using PRIMARY (member_id=b.member_id)
 ### [대안 검토]
 - 좋아요 수 기준 정렬을 유지하기 위해 다음 선택지를 검토
 
-|  방법   | 장점 |                    단점                     |
-|:-----:|:--:|:-----------------------------------------:|
-| 인라인 뷰 |  단일 쿼리 처리 가능  |               동적 쿼리 작성 어려움                |
-| 역정규화 |  조회 성능 우수  | • 좋아요 수 증감 시 동시성 문제 발생 가능  • 데이터 정합성 관리 필요 |
-| 상관 서브쿼리 |  구현 단순  |               집계 비용 증가                |
+|  방법   | 장점 |                      단점                       |
+|:-----:|:--:|:---------------------------------------------:|
+| 인라인 뷰 |  단일 쿼리 처리 가능  |                 동적 쿼리 작성 어려움                  |
+| 역정규화 |  조회 성능 우수  | • 좋아요 수 증감 시 동시성 문제 발생 가능 <br>• 데이터 정합성 관리 필요 |
+| 상관 서브쿼리 |  구현 단순  |                   집계 비용 증가                    |
 
 <br>
 
@@ -585,11 +585,15 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 2. 인덱스를 적용해도 더 느린 이유 → **디스크 랜덤 I/O 발생**
     - 인라인 뷰
    ```sql
-   Index lookup on b using idx_board_deleted_at (deleted_at=NULL), with index condition: (b.deleted_at is null) (actual time=1.59..5874 rows=899962 loops=1)
+   Index lookup on b using idx_board_deleted_at 
+   (deleted_at=NULL), with index condition: (b.deleted_at is null) 
+   (actual time=1.59..5874 rows=899962 loops=1)
    ```
    - 상관 서브쿼리
    ```sql
-   Index lookup on b using idx_board_deleted_at (deleted_at=NULL), with index condition: (b.deleted_at is null) (actual time=2.95..5711 rows=899962 loops=1)
+   Index lookup on b using idx_board_deleted_at 
+   (deleted_at=NULL), with index condition: (b.deleted_at is null) 
+   (actual time=2.95..5711 rows=899962 loops=1)
    ```
 
     두 방식 다 `with index condition`  인덱스 기반 필터링 진행해도(`rows=899962`) 약 90만 건 데이터 스캔
@@ -647,7 +651,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 <br>
 
-**최신 게시판 ID 조회 쿼리**  
+**최신 게시판 ID 100건 조회 쿼리**  
 ```sql
 SELECT 
 	b.board_id 
@@ -706,7 +710,7 @@ ORDER BY
 LIMIT 0, 10;
 ```
 
-- 응답 소요 시간: **약 0.067초**
+- 응답 소요 시간: **약 0.067초**  
 ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
 
 <br>
