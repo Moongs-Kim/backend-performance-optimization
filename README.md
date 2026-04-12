@@ -388,3 +388,235 @@ Single-row index lookup on m using PRIMARY (member_id=b.member_id)
 <br>
 
 - 이를 개선하기 위해 Cursor 기반 페이징 적용 가능성을 검토
+
+<br>
+
+## 2. 트레이드 오프 기반 게시판 정렬 기능 설계
+
+### [성능 분석 데이터 환경]
+- 게시판/ 회원 테이블 데이터 각각 100만
+- 게시판 삭제된 수 10만 (Sofe Delete → deleted_at 컬럼 NULL 유무 판단)
+- 좋아요 테이블 데이터 20만
+
+<br>
+
+### [상황]
+- 기존 게시판 목록 조회는 단순 페이징 기반 조회 기능만 제공
+
+  게시판 목록 조회 Repository Code  
+  ![초기 게시판 목록 조회 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%B4%88%EA%B8%B0%20%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C%20Repository%20Code.png)
+    - Fetch Join 사용
+
+- 서비스 확장을 위해 다음 기능을 고려
+    - 제목 / 작성자 조건 검색
+    - 최신순 / 조회순 / 좋아요순 정렬
+
+- 게시판과 좋아요 테이블의 관계
+    - 게시판 (1) : 좋아요 (N)
+    - 게시판 테이블에는 좋아요 수 집계 컬럼이 존재하지 않는 정규화 유지 상태
+
+### [1차 구현 - Querydsl 기반 동적 쿼리  + 상관 서브쿼리]
+**구현 방식**  
+- Querydsl을 활용하여 검색 조건 및 정렬 조건을 동적으로 처리
+- Fetch Join 대신 DTO Projection을 사용하여 필요한 컬럼만 조회
+- 좋아요 수는 SELECT절의 상관 서브쿼리로 집계
+- 좋아요 수 기준 정렬 역시 동일한 상관 서브쿼리를 사용
+
+게시글 목록 조회 Repository Code  
+![게시글 목록 조회 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20Repository%20Code%201.png)
+
+좋아요 수 조회 상관 서브쿼리 Repository Code
+![좋아요 수 조회 상관 서브쿼리 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20Repository%20Code%202.png)
+
+좋아요 수 내림차순 정렬 Repository Code
+![좋아요 수 내림차순 정렬 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20Repository%20Code%203.png)
+
+**선택 이유**  
+- Fetch Join은 게시판 (1) : 좋아요 (N) 관계에서 row 증가로 인해 DB 레벨 페이징이 불가능
+- 좋아요 수는 단순 조인이 아닌 집계값이므로 Fetch Join으로 해결 불가
+- Querydsl을 사용하면 동적 쿼리 관리가 용이
+
+### [발생한 문제 인식]
+**상관 서브쿼리를 사용한 방식의 구조적 한계**  
+- 게시글 row 마다 좋아요 집계 연산 수행
+- 좋아요 수 정렬 시 동일 집계 연산 반복
+
+**Explain Analyze를 통한 실제 쿼리 수행 확인**  
+```sql
+-> Select #3 (subquery in projection; dependent)
+    -> Aggregate: count(l2.like_id)  
+        -> Covering index lookup on l2 using uq_board_member (board_id=b.board_id) 
+-> Select #2 (subquery in projection; dependent)
+    -> Aggregate: count(l.like_id) 
+        -> Covering index lookup on l using uq_board_member (board_id=b.board_id)
+```
+- **실제로 Dependent Subquery가 2번 실행**
+
+**응답 소요 시간 확인: 약 6.8초**  
+![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
+- **따라서 데이터가 증가할 경우 게시판 목록 API의 응답 시간이 급격히 증가할 수 있다고 판단**
+
+### [대안 검토]
+- 좋아요 수 기준 정렬을 유지하기 위해 다음 선택지를 검토
+
+|  방법   | 장점 |                    단점                     |
+|:-----:|:--:|:-----------------------------------------:|
+| 인라인 뷰 |  단일 쿼리 처리 가능  |               동적 쿼리 작성 어려움                |
+| 역정규화 |  조회 성능 우수  | • 좋아요 수 증감 시 동시성 문제 발생 가능  • 데이터 정합성 관리 필요 |
+| 상관 서브쿼리 |  구현 단순  |               집계 비용 증가                |
+
+### [대안 성능 분석]
+**상관 서브쿼리**  
+```sql
+SELECT 
+	b.board_id,
+	b.title,
+	b.view_count,
+	b.created_date,
+	m.name,
+	(SELECT COUNT(l.like_id) FROM likes l WHERE l.board_id = b.board_id) 
+FROM 
+	board b 
+JOIN 
+	member m ON m.member_id = b.member_id 
+WHERE
+	b.deleted_at IS NULL
+ORDER BY
+	(SELECT COUNT(l2.like_id) FROM likes l2 WHERE l2.board_id = b.board_id) DESC,
+	b.board_id
+LIMIT 0,10;
+```
+
+**인라인 뷰 쿼리**  
+```sql
+SELECT
+	b.board_id,
+	b.title,
+	b.view_count,
+	b.created_date,
+	m.name,
+	lc.likeCount 
+FROM
+	board b
+JOIN 
+	member m ON m.member_id = b.member_id 
+LEFT JOIN 
+	(SELECT 
+		l.board_id,
+		COUNT(l.like_id)
+	 FROM 
+	 	likes l 
+ 	 GROUP BY
+ 	 	l.board_id
+ 	) lc(boardId,likeCount) ON lc.boardId = b.board_id 
+WHERE 
+	b.deleted_at IS NULL 
+ORDER BY 
+	lc.likeCount DESC,
+	b.board_id 
+LIMIT 0,10;
+```
+
+|  방법   | 응답 소요 시간 |                    deleted_at 컬럼 인덱스 적용 후                     |
+|:-----:|:--------:|:-----------------------------------------:|
+| 인라인 뷰 | 약 1분 15초 |               동적 쿼리 작성 어려움                |
+| 상관 서브쿼리 |  구현 단순   |               집계 비용 증가                |
+
+- deleted_at 컬럼 인덱스
+```sql
+CREATE INDEX idx_board_deleted_at ON board (deleted_at);
+```
+
+**Explain Analyze를 활용하여 ‘인라인 뷰’와 ‘상관 서브쿼리’를 비교 분석**  
+**<공통점>**  
+1. 응답 소요 시간이 긴 이유 → **풀테이블 스캔**
+    - 인라인 뷰
+    ```sql
+    Table scan on b (actual time=2.96..1449 rows=1e+6 loops=1) 
+    ```
+   - 상관 서브쿼리
+   ```sql
+   Table scan on b (actual time=1.61..1476 rows=1e+6 loops=1)
+   ```
+
+두 방식 다 **풀테이블 스캔**
+
+소요 시간: **약 1.5초**
+
+2. 인덱스를 적용해도 더 느린 이유 → **디스크 랜덤 I/O 발생**
+    - 인라인 뷰
+   ```sql
+   Index lookup on b using idx_board_deleted_at (deleted_at=NULL), with index condition: (b.deleted_at is null) (actual time=1.59..5874 rows=899962 loops=1)
+   ```
+   - 상관 서브쿼리
+   ```sql
+   Index lookup on b using idx_board_deleted_at (deleted_at=NULL), with index condition: (b.deleted_at is null) (actual time=2.95..5711 rows=899962 loops=1)
+   ```
+
+두 방식 다 `with index condition`  인덱스 기반 필터링 진행해도(`rows=899962`) 약 90만 건 데이터 스캔
+
+약 90만 건의 디스크 랜덤 I/O 발생: **약 5.8초**
+
+풀테이블 스캔 **(약 1.5초)** 보다 **4.3초 오래 걸림**
+
+**<차이점>**  
+1. 상관 서브쿼리가 더 빠른 이유
+    ```sql
+   Sort: (select #3) DESC, b.board_id (actual time=6727..6727 rows=10 loops=1)
+    ```
+   - 정렬 작업 먼저 진행 후 10개 데이터(`rows=10`)로 데이터 양 감소
+   ```sql
+   Single-row index lookup on m using PRIMARY (member_id=b.member_id)
+   (actual time=1.92..1.92 rows=1 loops=10)
+   ```
+   - member 테이블 탐색 10번(`loops=10`)
+   ```sql
+   Nested loop inner join (actual time=6747..6748 rows=10 loops=1)
+   ```
+   - JOIN까지 진행하는데 소요된 시간: **약 6.7초**
+
+2. 인라인 뷰가 더 느린 이유
+    ```sql
+    Filter: (b.deleted_at is null) (actual time=2.97..1596 rows=899962 loops=1)
+    ```
+   - WHERE절 조건으로 필터링 후 남은 데이터 수 약 90만 건(`rows=899962`)
+   ```sql
+   Single-row index lookup on m using PRIMARY (member_id=b.member_id) 
+   (actual time=0.0793..0.0794 rows=1 loops=899962)
+   ```
+   - member 테이블 탐색 약 90만(`loops=899962`)
+   ```sql
+   Nested loop inner join (actual time=3.58..73241 rows=899962 loops=1)
+   ```
+   - JOIN까지 진행하는데 소요된 시간: **약 73초(1분 13초)**
+
+- 이를 통해 쿼리 연산 초기 단계에서 **데이터 범위를 줄이지 못하는 구조**가 전체 성능 병목의 핵심 원인임을 확인
+- 역정규화를 통한 해결 방안도 검토하였으나 좋아요 수 변경 시 데이터 정합성과 동시성 제어 복잡도가 증가하는 트레이드 오프가 있다고 판단
+- 따라서 현재 구조에서는 대용량 데이터에서 집계 기반 정렬 쿼리의 구조적 한계를 인지하고
+  **조회 범위를 제한하는 방법**을 생각
+
+### [최종 선택]
+- ‘완전한 좋아요 수 정렬’ 대신 ‘최신 게시글 100건을 기준으로 좋아요 수를 집계’하여 상위 10건만 조회하도록 변경
+
+**최신 게시판 ID 조회 쿼리**  
+```sql
+SELECT 
+	b.board_id 
+FROM 
+	board b 
+JOIN 
+	member m ON m.member_id = b.member_id 
+WHERE 
+	b.deleted_at IS NULL 
+ORDER BY 
+	b.created_date DESC,
+	b.board_id 
+LIMIT 100;
+```
+
+- 멀티 컬럼 인덱스 적용
+```sql
+CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
+```
+
+- 응답 소요 시간: **약 0.008초**  
