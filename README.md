@@ -423,6 +423,8 @@ Single-row index lookup on m using PRIMARY (member_id=b.member_id)
     - 게시판 (1) : 좋아요 (N)
     - 게시판 테이블에는 좋아요 수 집계 컬럼이 존재하지 않는 정규화 유지 상태
 
+<br>
+
 ### [1차 구현 - Querydsl 기반 동적 쿼리  + 상관 서브쿼리]
 **구현 방식**  
 - Querydsl을 활용하여 검색 조건 및 정렬 조건을 동적으로 처리
@@ -486,11 +488,11 @@ Single-row index lookup on m using PRIMARY (member_id=b.member_id)
 ### [대안 검토]
 - 좋아요 수 기준 정렬을 유지하기 위해 다음 선택지를 검토
 
-|  방법   | 장점 |                      단점                       |
-|:-----:|:--:|:---------------------------------------------:|
-| 인라인 뷰 |  단일 쿼리 처리 가능  |                 동적 쿼리 작성 어려움                  |
-| 역정규화 |  조회 성능 우수  | • 좋아요 수 증감 시 동시성 문제 발생 가능 <br>• 데이터 정합성 관리 필요 |
-| 상관 서브쿼리 |  구현 단순  |                   집계 비용 증가                    |
+|  방법   | 장점           | 단점                                            |
+|:-----:|:-------------|:----------------------------------------------|
+| 인라인 뷰 | 단일 쿼리 처리 가능  | 동적 쿼리 작성 어려움                                  |
+| 역정규화 | 조회 성능 우수     | • 좋아요 수 증감 시 동시성 문제 발생 가능 <br>• 데이터 정합성 관리 필요 |
+| 상관 서브쿼리 | 구현 단순        | 집계 비용 증가                                      |
 
 <br>
 
@@ -550,10 +552,10 @@ LIMIT 0,10;
 
 <br>
 
-|  방법   | 응답 소요 시간 |                    deleted_at 컬럼 인덱스 적용 후                     |
-|:-----:|:--------:|:-----------------------------------------:|
-| 인라인 뷰 | 약 1분 15초 |               동적 쿼리 작성 어려움                |
-| 상관 서브쿼리 |  구현 단순   |               집계 비용 증가                |
+|  방법   | 응답 소요 시간 |                                                                                                                                     소요 시간 이미지                                                                                                                                      | deleted_at 컬럼 인덱스 적용 후 |   소요 시간 이미지   |
+|:-----:|:--------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------:|:-------------:|
+| 인라인 뷰 | 약 1분 15초 | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |        약 1분 22초        | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
+| 상관 서브쿼리 |  약 6.8초   |                                                                                                                                   ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)                                                                                                                                    |         약 11초          |      ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)         |
 
 <br>
 
@@ -571,6 +573,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
     ```sql
     Table scan on b (actual time=2.96..1449 rows=1e+6 loops=1) 
     ```
+   <br>
    - 상관 서브쿼리
    ```sql
    Table scan on b (actual time=1.61..1476 rows=1e+6 loops=1)
@@ -589,6 +592,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    (deleted_at=NULL), with index condition: (b.deleted_at is null) 
    (actual time=1.59..5874 rows=899962 loops=1)
    ```
+   <br>
    - 상관 서브쿼리
    ```sql
    Index lookup on b using idx_board_deleted_at 
@@ -610,11 +614,13 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    Sort: (select #3) DESC, b.board_id (actual time=6727..6727 rows=10 loops=1)
     ```
    - 정렬 작업 먼저 진행 후 10개 데이터(`rows=10`)로 데이터 양 감소
+   <br>
    ```sql
    Single-row index lookup on m using PRIMARY (member_id=b.member_id)
    (actual time=1.92..1.92 rows=1 loops=10)
    ```
    - member 테이블 탐색 10번(`loops=10`)
+   <br>
    ```sql
    Nested loop inner join (actual time=6747..6748 rows=10 loops=1)
    ```
@@ -717,3 +723,10 @@ LIMIT 0, 10;
 
 - 그 결과 **상관 서브쿼리를 제거**하여 데이터 건수에 따라 증가하던 쿼리 비용 증가 문제를 해결
 - **제한된 범위 내에서 좋아요 기반 정렬 기능을 유지**
+
+<br>
+
+#### [향후 개선 가능성]
+**완전한 좋아요 수 정렬 기능을 위해**  
+- 좋아요 수를 캐싱하여 조회 시 반복적인 집계 연산을 줄이는 방안을 고려
+- 게시판 테이블에 좋아요 수 컬럼을 추가하는 역정규화 전략을 통해 조회 성능 향상시키는 방안을 고려
