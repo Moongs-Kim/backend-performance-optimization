@@ -288,7 +288,8 @@ CREATE INDEX idx_board_deleted_at_created_date_desc ON board (deleted_at, create
 
 **Explain Analyze**  
 ```sql
-Index lookup on b using idx_board_deleted_at_created_date_desc (deleted_at=NULL), with index condition: (b.deleted_at is null) 
+Index lookup on b using idx_board_deleted_at_created_date_desc 
+(deleted_at=NULL), with index condition: (b.deleted_at is null) 
 (actual time=0.0612..0.0892 rows=10 loops=1)
 ```
 - 인덱스 기반 필터링으로 LIMIT 10에 맞는 데이터만 조회 `rows=10`
@@ -370,7 +371,8 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 <br>
 
 ```sql
-Index lookup on b using idx_board_deleted_at_created_date_desc (deleted_at=NULL), with index condition: (b.deleted_at is null) 
+Index lookup on b using idx_board_deleted_at_created_date_desc 
+(deleted_at=NULL), with index condition: (b.deleted_at is null) 
 (actual time=0.766..957 rows=5010 loops=1)
 ```
 - 인덱스가 적용되어 있어도 5010건(`rows=5010`)의 데이터 스캔
@@ -378,13 +380,14 @@ Index lookup on b using idx_board_deleted_at_created_date_desc (deleted_at=NULL)
 <br>
 
 ```sql
-Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
-```
-
-```sql
 Single-row index lookup on m using PRIMARY (member_id=b.member_id) 
 (actual time=0.345..0.345 rows=1 loops=5010)
 ```
+
+```sql
+Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
+```
+
 - JOIN을 위해 member 테이블 5010번 탐색(`loops=5010`)
     - 0.345ms * 5010 = 1728ms → **약 1.7초**
 - member 테이블과 JOIN
