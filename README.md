@@ -5,7 +5,7 @@
 
 #### 인프라 구조
 
-![부하 테스트 인프라 구조](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/%EB%B6%80%ED%95%98%20%ED%85%8C%EC%8A%A4%ED%8A%B8%20%EC%9D%B8%ED%94%84%EB%9D%BC%20%EA%B5%AC%EC%A1%B0.png)
+![k6 부하 테스트 인프라 구조](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/k6%20%EB%B6%80%ED%95%98%20%ED%85%8C%EC%8A%A4%ED%8A%B8%20%EC%9D%B8%ED%94%84%EB%9D%BC%20%EA%B5%AC%EC%A1%B0.png)
 
 #### 데이터
 - 게시판/ 회원 테이블 데이터 각각 100만
