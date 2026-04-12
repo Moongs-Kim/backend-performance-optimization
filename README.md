@@ -758,3 +758,79 @@ LIMIT 0, 10;
 **완전한 좋아요 수 정렬 기능을 위해**  
 - 좋아요 수를 캐싱하여 조회 시 반복적인 집계 연산을 줄이는 방안을 고려
 - 게시판 테이블에 좋아요 수 컬럼을 추가하는 역정규화 전략을 통해 조회 성능 향상시키는 방안을 고려
+
+<br>
+
+---
+
+<br>
+
+## 3. AWS VPC를 활용한 보안, 고가용성 인프라 구축
+### [도입 배경]
+- AWS의 기본 VPC 환경에서 EC2, RDS가 퍼블릭하게 노출된 구조
+- 단일 서버 + 단일 AZ 구조로 장애 발생 시 서비스 전체 중단 위험
+- 외부 사용자와 관리자 접근 경로가 분리되지 않아 보안 통제가 어려운 구조
+
+<br>
+
+### [설계 및 개선 내용]
+#### VPC 재구성 후 인프라 구조  
+![VPC 재구성 후 인프라 구조](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/aws-infra/image/AWS%20%EC%9D%B8%ED%94%84%EB%9D%BC%20%EA%B5%AC%EC%A1%B0.png)
+
+#### 보안  
+- VPC를 재구성하여 **Public / Private Subnet 구조로 분리**
+    - 서버(EC2), RDS를 Private Subnet에 배치하여 외부 직접 접근을 차단
+- Public Subnet에 **Bastion Host**를 구성하여 관리자 접근 경로를 단일화
+- Private Subnet 인스턴스의 외부 통신을 위해 **NAT Gateway** 구성
+    - 내부 자원을 외부에 노출하지 않으면서도 외부 통신이 가능한 구조로 개선
+
+<br>
+
+- **보안 그룹 최소 권한 원칙** 적용
+    - Bastion Host → SSH 허용 (관리자 IP 제한)
+    - ALB → HTTP(80) / HTTPS(443) 허용
+    - 서버 → ALB, Bastion Host만 접근 허용
+    - RDS → 서버, Bastion Host만 접근 허용
+
+<br>
+
+#### 가용성  
+- **멀티 AZ + 멀티 서버 구조로 전환**
+    - 서버를 가용 영역 ap-northeast-2a / ap-northeast-2b 에 분산 배치
+    - ALB를 통해 트래픽 분산 처리
+    - RDS Multi-AZ 구성으로 장애 시 자동으로 Standby DB로 전환
+
+<br>
+
+### [요청 흐름]
+#### 사용자 요청 흐름
+![사용자 요청 흐름](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/aws-infra/image/AWS%20%EC%9D%B8%ED%94%84%EB%9D%BC%20%EC%82%AC%EC%9A%A9%EC%9E%90%20%EC%9A%94%EC%B2%AD%20%ED%9D%90%EB%A6%84.png)  
+
+- 사용자 ALB로 요청
+- ALB를 통해 사용자 요청 트래픽 분산 처리
+- 각 서버 Primary DB에 요청(Read / Write)
+
+<br>
+
+#### 관리자 요청 흐름
+![관리자 요청 흐름](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/aws-infra/image/AWS%20%EC%9D%B8%ED%94%84%EB%9D%BC%20%EA%B4%80%EB%A6%AC%EC%9E%90%20%EC%9A%94%EC%B2%AD%20%ED%9D%90%EB%A6%84.png)  
+
+- 관리자 Bastion Host를 통해 VPC 내부 자원 접근(서버, RDS)
+
+<br>
+
+#### 서버 요청 흐름
+![서버 요청 흐름](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/aws-infra/image/AWS%20%EC%9D%B8%ED%94%84%EB%9D%BC%20EC2%20%EC%84%9C%EB%B2%84%20%EC%9A%94%EC%B2%AD%20%ED%9D%90%EB%A6%84.png)
+
+- 서버는 NAT 게이트웨이를 통해 외부 인터넷 접근 가능(패키지 설치, 외부 API 요청 등)
+- 외부 인터넷에서 직접 서버 접근 차단
+
+<br>
+
+### [성과]
+- Public Subnet 구조를 Private Subnet + NAT Gateway 구조로 변경하여 **외부에서의 직접 접근을 차단하고 Outbound 통신만 허용하도록 개선**
+- 내부 접근 경로를 Bastion Host로 단일화 하여 **보안 관리 범위를 축소**
+- 단일 장애 지점을 제거하여 **고가용성 구조를 확보**
+    - 실제 서버 1대를 중단한 상황에서도 서비스가 정상 동작함을 확인
+- ALB 기반 구조로 전환하여 **수평 확장이 가능한 구조로 개선**
+    - EC2 서버가 병목 지점일 경우 인스턴스를 추가하여 성능을 확장할 수 있는 구조로 개선
