@@ -620,6 +620,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    - 정렬 작업 먼저 진행 후 10개 데이터(`rows=10`)로 데이터 양 감소
    
    <br>
+   <br>
    
    ```sql
    Single-row index lookup on m using PRIMARY (member_id=b.member_id)
@@ -627,6 +628,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    ```
    - member 테이블 탐색 10번(`loops=10`)
    
+   <br>
    <br>
    
    ```sql
@@ -643,6 +645,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    - WHERE절 조건으로 필터링 후 남은 데이터 수 약 90만 건(`rows=899962`)
 
    <br>
+   <br>
 
    ```sql
    Single-row index lookup on m using PRIMARY (member_id=b.member_id) 
@@ -651,11 +654,16 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    - member 테이블 탐색 약 90만(`loops=899962`)
 
    <br>
+   <br>
 
    ```sql
    Nested loop inner join (actual time=3.58..73241 rows=899962 loops=1)
    ```
    - JOIN까지 진행하는데 소요된 시간: **약 73초(1분 13초)**
+
+<br>
+
+   조인 연산 단계에서 **데이터 양(`rows=899962 / rows=10`)** 에 의한 성능 차이 발생  
 
 <br>
 
