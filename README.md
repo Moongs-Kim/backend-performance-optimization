@@ -662,8 +662,8 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
    - JOIN까지 진행하는데 소요된 시간: **약 73초(1분 13초)**
 
 <br>
-
-   조인 연산 단계에서 **데이터 양(`rows=899962 / rows=10`)** 에 의한 성능 차이 발생  
+    
+&nbsp; &nbsp; 조인 연산 단계에서 **데이터 양(`rows=899962 / rows=10`)** 에 의한 성능 차이 발생  
 
 <br>
 
@@ -675,7 +675,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 <br>
 
 ### [최종 선택]
-- ‘완전한 좋아요 수 정렬’ 대신 ‘최신 게시글 100건을 기준으로 좋아요 수를 집계’하여 상위 10건만 조회하도록 변경
+- ‘완전한 좋아요 수 정렬’ 대신 ‘최신 게시글 100건을 기준으로 좋아요 수를 집계’하여 조회하도록 변경
 
 <br>
 
