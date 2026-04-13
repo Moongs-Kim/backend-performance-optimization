@@ -177,16 +177,19 @@ Table scan on b (actual time=0.767..481 rows=1e+6 loops=1)
 <br>
 
 ```sql
-Sort: b.created_date DESC, b.board_id (actual time=2861..2861 rows=10 loops=1)
-```
-
-```sql
 Filter: (b.deleted_at is null) (actual time=0.768..558 rows=899962 loops=1)
 ```
 
-약 90만 건(`rows=899962`) 정렬
 - 정렬 전 WHERE절 조건 필터링까지 소요 시간: **558ms**
-- 필터링 후 남은 rows: **약 90만**
+- 필터링 후 남은 데이터 수: `rows=899962` → **약 90만**
+
+<br>
+
+```sql
+Sort: b.created_date DESC, b.board_id (actual time=2861..2861 rows=10 loops=1)
+```
+
+- 약 90만 건 정렬
 - 정렬 소요 시간: 2861ms - 558ms = 2303ms → **약 2.3초**
 
 <br>
@@ -370,6 +373,8 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 
 <br>
 
+**Explain Analyze**  
+
 ```sql
 Index lookup on b using idx_board_deleted_at_created_date_desc 
 (deleted_at=NULL), with index condition: (b.deleted_at is null) 
@@ -384,7 +389,7 @@ Single-row index lookup on m using PRIMARY (member_id=b.member_id)
 (actual time=0.345..0.345 rows=1 loops=5010)
 ```
 - JOIN을 위해 member 테이블 5010번 탐색(`loops=5010`)
-    - 0.345ms * 5010 = 1728ms → **약 1.7초**
+- 탐색 소요 시간: 0.345ms * 5010 = 1728ms → **약 1.7초**
 
 <br>
 
@@ -393,12 +398,11 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 ```
 
 - member 테이블과 JOIN
-    - 2686ms - 1728ms = 958ms → **약 1초**
+- JOIN 소요 시간: 2686ms - 1728ms = 958ms → **약 1초**
 
 <br>
 
-- 5010건의 데이터 스캔으로 인한 JOIN 소요 시간
-    - 1.7초 + 1초 = **2.7초**
+- 5010건의 데이터 스캔으로 인한 JOIN 관련 연산 총 소요 시간: 1.7초 + 1초 = **2.7초**
 
 <br>
 
