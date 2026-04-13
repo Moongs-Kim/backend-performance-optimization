@@ -372,7 +372,7 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 
 <br>
 
-**Explain Analyze**  
+**Explain Analyze를 활용하여 `LIMIT 5000, 10` 쿼리 분석**  
 
 ```sql
 Index lookup on b using idx_board_deleted_at_created_date_desc 
@@ -441,7 +441,7 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 <br>
 
 ### [1차 구현 - Querydsl 기반 동적 쿼리  + 상관 서브쿼리]
-**구현 방식**  
+#### 구현 방식  
 - Querydsl을 활용하여 검색 조건 및 정렬 조건을 동적으로 처리
 - Fetch Join 대신 DTO Projection을 사용하여 필요한 컬럼만 조회
 - 좋아요 수는 SELECT절의 상관 서브쿼리로 집계
@@ -449,22 +449,22 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 <br>
 
-게시글 목록 조회 Repository Code  
+**게시글 목록 조회 Repository Code**  
 ![게시글 목록 조회 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20Repository%20Code%201.png)
 
 <br>
 
-좋아요 수 조회 상관 서브쿼리 Repository Code  
+**좋아요 수 조회 상관 서브쿼리 Repository Code**  
 ![좋아요 수 조회 상관 서브쿼리 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20Repository%20Code%202.png)
 
 <br>
 
-좋아요 수 내림차순 정렬 Repository Code  
+**좋아요 수 내림차순 정렬 Repository Code**  
 ![좋아요 수 내림차순 정렬 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20Repository%20Code%203.png)
 
 <br>
 
-**선택 이유**  
+#### 선택 이유  
 - Fetch Join은 게시판 (1) : 좋아요 (N) 관계에서 row 증가로 인해 DB 레벨 페이징이 불가능
 - 좋아요 수는 단순 조인이 아닌 집계값이므로 Fetch Join으로 해결 불가
 - Querydsl을 사용하면 동적 쿼리 관리가 용이
@@ -505,7 +505,7 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 |  방법   | 장점           | 단점                                            |
 |:-----:|:-------------|:----------------------------------------------|
-| 인라인 뷰 | 단일 쿼리 처리 가능  | 동적 쿼리 작성 어려움                                  |
+| 인라인 뷰 | 단일 쿼리 처리 가능  | • Querydsl 사용 불가 <br> • 동적 쿼리 작성 어려움          |
 | 역정규화 | 조회 성능 우수     | • 좋아요 수 증감 시 동시성 문제 발생 가능 <br>• 데이터 정합성 관리 필요 |
 | 상관 서브쿼리 | 구현 단순        | 집계 비용 증가                                      |
 
@@ -691,6 +691,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 ### [최종 선택]
 - ‘완전한 좋아요 수 정렬’ 대신 ‘최신 게시글 100건을 기준으로 좋아요 수를 집계’하여 조회하도록 변경
+- Querydsl에서 인라인 뷰 사용 제한으로 인해 쿼리를 ‘최신 게시글 ID 조회’ 와 ‘좋아요 수 집계’ 2단계로 분리
 
 <br>
 
@@ -755,6 +756,9 @@ LIMIT 0, 10;
 
 - 응답 소요 시간: **약 0.067초**  
 ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
+
+- 조회 범위를 축소하는 구조로 변경함으로써 처리해야 할 데이터 양 감소
+- 기존에는 활용하기 어려웠던 인덱스를 효과적으로 적용할 수 있는 구조로 개선하여 쿼리 성능을 향상
 
 <br>
 
