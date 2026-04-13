@@ -214,9 +214,9 @@ CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 
 <br>
 
-|     | 기존 응답 소요 시간  | 단일 컬럼 인덱스 적용 응답 소요 시간 | 소요 시간 이미지  |
-|:---:|:------------:|:---------------------:|:----------:|
-| 메인 쿼리 | 약 2.8초 |       약 0.007초        | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%8B%A8%EC%9D%BC%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
+|     | 기존 응답 소요 시간  | 단일 컬럼 인덱스 적용 응답 소요 시간 |                                                                                                                                                                                 측정 시간                                                                                                                                                                                 |
+|:---:|:------------:|:---------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 메인 쿼리 | 약 2.8초 |       약 0.007초        |                ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%8B%A8%EC%9D%BC%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png)                |
 | COUNT 쿼리 | 약 1.7초 |        약 1.7초         | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%B9%B4%EC%9A%B4%ED%8A%B8%20%EC%BF%BC%EB%A6%AC%20%EB%8B%A8%EC%9D%BC%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
 
 - 메인쿼리: **약 2.8초 → 약 0.007초 (약 400배 개선)**
@@ -243,7 +243,7 @@ CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 Index scan on b using idx_board_created_date_desc (actual time=0.055..0.098 rows=13 loops=1)
 ```
 - 약 100만 건(`rows=1e+6`) 풀테이블 스캔 → `rows=13`으로 데이터 스캔 양 감소
-- 소요 시간: **기존 481ms → 0.098ms (약 4900배 개선)**
+- 소요 시간: **기존 481ms → 0.098ms**
 
 <br>
 
@@ -262,9 +262,9 @@ CREATE INDEX idx_board_deleted_at_created_date_desc ON board (deleted_at, create
 
 <br>
 
-|     | 단일 컬럼 인덱스 적용 응답 소요 시간 | 멀티 컬럼 인덱스 적용 응답 소요 시간 | 소요 시간 이미지  |
-|:---:|:---------------------:|:---------------------:|:----------:|
-| 메인 쿼리 |       약 0.007초        |       약 0.007초        | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
+|     | 단일 컬럼 인덱스 적용 응답 소요 시간 | 멀티 컬럼 인덱스 적용 응답 소요 시간 |                                                                                                                                                                                 측정 시간                                                                                                                                                                                 |
+|:---:|:---------------------:|:---------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 메인 쿼리 |       약 0.007초        |       약 0.007초        |                ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png)                |
 |COUNT 쿼리 |        약 1.7초         |        약 0.4초         | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%B9%B4%EC%9A%B4%ED%8A%B8%20%EC%BF%BC%EB%A6%AC%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
 
 
@@ -292,7 +292,7 @@ Index lookup on b using idx_board_deleted_at_created_date_desc
 (deleted_at=NULL), with index condition: (b.deleted_at is null) 
 (actual time=0.0612..0.0892 rows=10 loops=1)
 ```
-- 인덱스 기반 필터링으로 LIMIT 10에 맞는 데이터만 조회 `rows=10`
+- 인덱스 기반 필터링으로 LIMIT 10 에 맞는 데이터만 조회 `rows=10`
 
 <br>
 
@@ -350,7 +350,7 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 
 <br>
 
-- **이를 통해 DB 쿼리 성능 개선이 전체 시스템 성능 향상으로 이어짐을 확인했습니다.**
+- **이를 통해 DB 쿼리 성능 개선이 전체 시스템 성능 향상으로 이어짐을 확인**
 
 <br>
 
@@ -383,15 +383,20 @@ Index lookup on b using idx_board_deleted_at_created_date_desc
 Single-row index lookup on m using PRIMARY (member_id=b.member_id) 
 (actual time=0.345..0.345 rows=1 loops=5010)
 ```
+- JOIN을 위해 member 테이블 5010번 탐색(`loops=5010`)
+    - 0.345ms * 5010 = 1728ms → **약 1.7초**
+
+<br>
 
 ```sql
 Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 ```
 
-- JOIN을 위해 member 테이블 5010번 탐색(`loops=5010`)
-    - 0.345ms * 5010 = 1728ms → **약 1.7초**
 - member 테이블과 JOIN
     - 2686ms - 1728ms = 958ms → **약 1초**
+
+<br>
+
 - 5010건의 데이터 스캔으로 인한 JOIN 소요 시간
     - 1.7초 + 1초 = **2.7초**
 
@@ -562,10 +567,10 @@ LIMIT 0,10;
 
 <br>
 
-|  방법   | 응답 소요 시간 |                                                                                                                                     소요 시간 이미지                                                                                                                                      | deleted_at 컬럼 인덱스 적용 후 |   소요 시간 이미지   |
-|:-----:|:--------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------:|:-------------:|
-| 인라인 뷰 | 약 1분 15초 | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |        약 1분 22초        | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
-| 상관 서브쿼리 |  약 6.8초   |                                                                                                                                   ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)                                                                                                                                    |         약 11초          |      ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)         |
+|  방법   | 응답 소요 시간 |                                                                                                                                                    측정 시간                                                                                                                                                     | deleted_at 컬럼 인덱스 적용 후 |                                                                                                                                                    측정 시간                                                                                                                                                     |
+|:-----:|:--------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| 인라인 뷰 | 약 1분 15초 |              ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)              |        약 1분 22초        |              ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)              |
+| 상관 서브쿼리 |  약 6.8초   | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |         약 11초          | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
 
 <br>
 
@@ -707,7 +712,7 @@ LIMIT 100;
 
 - 멀티 컬럼 인덱스 적용
 ```sql
-CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
+CREATE index idx_board_deleted_at_created_date_desc ON board (deleted_at, created_date DESC);
 ```
 
 - 응답 소요 시간: **약 0.008초**  
