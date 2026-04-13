@@ -716,7 +716,7 @@ LIMIT 100;
 CREATE index idx_board_deleted_at_created_date_desc ON board (deleted_at, created_date DESC);
 ```
 
-- 응답 소요 시간: **약 0.008초**  
+- 응답 소요 시간: **약 0.007초**  
 ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
 
 <br>
