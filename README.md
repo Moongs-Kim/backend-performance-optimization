@@ -318,8 +318,7 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 (actual time=0.0453..271 rows=899962 loops=1)
 ```
 
-- 기존 풀테이블 스캔: **1594ms**
-- 인덱스 적용 후: **271ms (약 5.8배 개선)**
+- 소요 시간: **기존 1594ms → 271ms**
 
 <br>
 
@@ -381,6 +380,7 @@ Index lookup on b using idx_board_deleted_at_created_date_desc
 (actual time=0.766..957 rows=5010 loops=1)
 ```
 - 인덱스가 적용되어 있어도 5010건(`rows=5010`)의 데이터 스캔
+- 소요 시간: **957ms → 약 1초**
 
 <br>
 
@@ -397,12 +397,8 @@ Single-row index lookup on m using PRIMARY (member_id=b.member_id)
 Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 ```
 
-- member 테이블과 JOIN
-- JOIN 소요 시간: 2686ms - 1728ms = 958ms → **약 1초**
-
-<br>
-
-- 5010건의 데이터 스캔으로 인한 JOIN 관련 연산 총 소요 시간: 1.7초 + 1초 = **2.7초**
+- 5010건의 데이터 스캔으로 인한 JOIN 까지 소요된 시간
+  - **2686ms → 약 2.7초** (1초 + 1.7초)
 
 <br>
 
