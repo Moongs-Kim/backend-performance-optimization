@@ -222,7 +222,7 @@ CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 
 <br>
 
-#### 메인 쿼리  
+#### <메인 쿼리>  
 
 **Explain**  
 
@@ -245,7 +245,7 @@ Index scan on b using idx_board_created_date_desc (actual time=0.055..0.098 rows
 
 <br>
 
-#### COUNT 쿼리 Explain
+#### <COUNT 쿼리>
 - 실행 계획 **변화 없음**
 
 <br>
