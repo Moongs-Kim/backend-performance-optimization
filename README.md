@@ -1,11 +1,3 @@
-
-## 목차
-1. [부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)](#1-부하-테스트-기반-게시판-성능-개선-k6--인덱스-최적화)
-2. [트레이드 오프 기반 게시판 정렬 기능 설계](#2-트레이드-오프-기반-게시판-정렬-기능-설계)
-3. [AWS VPC를 활용한 보안, 고가용성 인프라 구축](#3-aws-vpc를-활용한-보안-고가용성-인프라-구축)
-
-<br>
-
 <details>
 <summary><h2>1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)</h2></summary>
 
@@ -434,8 +426,9 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 <br>
 
-**응답 소요 시간 확인: 약 6.8초**  
-![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
+| 응답 소요 시간 | 측정 시간 |
+|:---:|:---:|
+| **약 6.8초** | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
 
 <br>
 
@@ -645,8 +638,9 @@ LIMIT 100;
 CREATE index idx_board_deleted_at_created_date_desc ON board (deleted_at, created_date DESC);
 ```
 
-- 응답 소요 시간: **약 0.007초**  
-![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
+| 응답 소요 시간 | 측정 시간 |
+|:---:|:---:|
+| **약 0.007초** | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
 
 <br>
 
@@ -683,8 +677,9 @@ ORDER BY
 LIMIT 0, 10;
 ```
 
-- 응답 소요 시간: **약 0.067초**  
-![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
+|   응답 소요 시간   | 측정 시간 |
+|:------------:|:---:|
+| **약 0.067초** | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
 </details>
 
 
