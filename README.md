@@ -7,7 +7,7 @@
 <br>
 
 <details>
-<summary><strong>1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)</strong></summary>
+<summary><h2>1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)</h2></summary>
 
 ### [부하 테스트 환경]
 
@@ -389,11 +389,12 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 <br>
 
-## 2. 트레이드 오프 기반 게시판 정렬 기능 설계
+<details>
+<summary><h2>2. 트레이드 오프 기반 게시판 정렬 기능 설계</h2></summary>
 
 ### [1차 구현 - Querydsl 기반 동적 쿼리  + 상관 서브쿼리]
 #### 구현 방식
-- 좋아요 수는 SELECT절의 상관 서브쿼리로 집계
+- 좋아요 수 SELECT절의 상관 서브쿼리로 집계
 - 좋아요 수 기준 정렬 역시 동일한 상관 서브쿼리를 사용
 
 <br>
@@ -429,7 +430,7 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
     -> Aggregate: count(l.like_id) 
         -> Covering index lookup on l using uq_board_member (board_id=b.board_id)
 ```
-- **실제로 Dependent Subquery가 2번 실행**
+- **Dependent Subquery가 2번 실행**
 
 <br>
 
@@ -613,7 +614,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 <br>
     
-&nbsp; &nbsp; &nbsp; &nbsp; JOIN 연산 단계에서 **데이터 양(`rows=899962 / rows=10`)** 에 의한 성능 차이 발생
+&nbsp; &nbsp; &nbsp; &nbsp; JOIN 연산 단계에서 **데이터 양(`rows=10 / rows=899962`)** 에 의한 성능 차이 발생
 
 <br>
 
@@ -684,6 +685,8 @@ LIMIT 0, 10;
 
 - 응답 소요 시간: **약 0.067초**  
 ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
+</details>
+
 
 <br>
 
