@@ -391,38 +391,8 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 ## 2. 트레이드 오프 기반 게시판 정렬 기능 설계
 
-### [성능 분석 데이터 환경]
-- 게시판/ 회원 테이블 데이터 각각 100만
-- 게시판 삭제된 수 10만 (Sofe Delete → deleted_at 컬럼 NULL 유무 판단)
-- 좋아요 테이블 데이터 20만
-
-<br>
-
-### [상황]
-- 기존 게시판 목록 조회는 단순 페이징 기반 조회 기능만 제공
-
-  게시판 목록 조회 Repository Code  
-  ![초기 게시판 목록 조회 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%B4%88%EA%B8%B0%20%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EB%AA%A9%EB%A1%9D%20%EC%A1%B0%ED%9A%8C%20Repository%20Code.png)
-    - Fetch Join 사용
-
-<br>
-
-- 서비스 확장을 위해 다음 기능을 고려
-    - 제목 / 작성자 조건 검색
-    - 최신순 / 조회순 / 좋아요순 정렬
-
-<br>
-
-- 게시판과 좋아요 테이블의 관계
-    - 게시판 (1) : 좋아요 (N)
-    - 게시판 테이블에는 좋아요 수 집계 컬럼이 존재하지 않는 정규화 유지 상태
-
-<br>
-
 ### [1차 구현 - Querydsl 기반 동적 쿼리  + 상관 서브쿼리]
-#### 구현 방식  
-- Querydsl을 활용하여 검색 조건 및 정렬 조건을 동적으로 처리
-- Fetch Join 대신 DTO Projection을 사용하여 필요한 컬럼만 조회
+#### 구현 방식
 - 좋아요 수는 SELECT절의 상관 서브쿼리로 집계
 - 좋아요 수 기준 정렬 역시 동일한 상관 서브쿼리를 사용
 
@@ -440,13 +410,6 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 **좋아요 수 내림차순 정렬 Repository Code**  
 ![좋아요 수 내림차순 정렬 Repository Code](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/repository%20code/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20Repository%20Code%203.png)
-
-<br>
-
-#### 선택 이유  
-- Fetch Join은 게시판 (1) : 좋아요 (N) 관계에서 row 증가로 인해 DB 레벨 페이징이 불가능
-- 좋아요 수는 단순 조인이 아닌 집계값이므로 Fetch Join으로 해결 불가
-- Querydsl을 사용하면 동적 쿼리 관리가 용이
 
 <br>
 
@@ -475,22 +438,15 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 <br>
 
-- **따라서 데이터가 증가할 경우 게시판 목록 API의 응답 시간이 급격히 증가할 수 있다고 판단**
-
-<br>
-
-### [대안 검토]
-- 좋아요 수 기준 정렬을 유지하기 위해 다음 선택지를 검토
-
-|  방법   | 장점           | 단점                                            |
-|:-----:|:-------------|:----------------------------------------------|
-| 인라인 뷰 | 단일 쿼리 처리 가능  | • Querydsl 사용 불가 <br> • 동적 쿼리 작성 어려움          |
-| 역정규화 | 조회 성능 우수     | • 좋아요 수 증감 시 동시성 문제 발생 가능 <br>• 데이터 정합성 관리 필요 |
-| 상관 서브쿼리 | 구현 단순        | 집계 비용 증가                                      |
-
-<br>
-
 ### [대안 성능 분석]
+
+#### 성능 분석 데이터 환경
+- 게시판/ 회원 테이블 데이터 각각 100만
+- 게시판 삭제된 수 10만 (Sofe Delete → deleted_at 컬럼 NULL 유무 판단)
+- 좋아요 테이블 데이터 20만
+
+<br>
+
 **상관 서브쿼리**  
 ```sql
 SELECT 
@@ -657,14 +613,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 <br>
     
-&nbsp; &nbsp; &nbsp; &nbsp; JOIN 연산 단계에서 **데이터 양(`rows=899962 / rows=10`)** 에 의한 성능 차이 발생  
-
-<br>
-
-- 이를 통해 쿼리 연산 초기 단계에서 **데이터 범위를 줄이지 못하는 구조**가 전체 성능 병목의 핵심 원인임을 확인
-- 역정규화를 통한 해결 방안도 검토하였으나 좋아요 수 변경 시 데이터 정합성과 동시성 제어 복잡도가 증가하는 트레이드 오프가 있다고 판단
-- 따라서 현재 구조에서는 대용량 데이터에서 집계 기반 정렬 쿼리의 구조적 한계를 인지하고
-  **조회 범위를 제한하는 방법**을 생각
+&nbsp; &nbsp; &nbsp; &nbsp; JOIN 연산 단계에서 **데이터 양(`rows=899962 / rows=10`)** 에 의한 성능 차이 발생
 
 <br>
 
@@ -735,21 +684,6 @@ LIMIT 0, 10;
 
 - 응답 소요 시간: **약 0.067초**  
 ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)
-
-- 조회 범위를 축소하는 구조로 변경함으로써 처리해야 할 데이터 양 감소
-- 기존에는 활용하기 어려웠던 인덱스를 효과적으로 적용할 수 있는 구조로 개선하여 쿼리 성능을 향상
-
-<br>
-
-- 그 결과 **상관 서브쿼리를 제거**하여 데이터 건수에 따라 증가하던 쿼리 비용 증가 문제를 해결
-- **제한된 범위 내에서 좋아요 기반 정렬 기능을 유지**
-
-<br>
-
-#### [향후 개선 가능성]
-**완전한 좋아요 수 정렬 기능을 위해**  
-- 좋아요 수를 캐싱하여 조회 시 반복적인 집계 연산을 줄이는 방안을 고려
-- 게시판 테이블에 좋아요 수 컬럼을 추가하는 역정규화 전략을 통해 조회 성능 향상시키는 방안을 고려
 
 <br>
 
