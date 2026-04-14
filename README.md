@@ -222,9 +222,9 @@ CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 
 <br>
 
-#### <메인 쿼리>  
+#### 메인 쿼리  
 
-**Explain**  
+**\<Explain\>**  
 
 |      | 인덱스 적용 전 |   인덱스 적용 후   |
 |:----:|:--------:|:------------:|
@@ -236,7 +236,7 @@ CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 
 <br>
 
-**Explain Analyze**  
+**\<Explain Analyze\>**  
 ```sql
 Index scan on b using idx_board_created_date_desc (actual time=0.055..0.098 rows=13 loops=1)
 ```
@@ -245,7 +245,7 @@ Index scan on b using idx_board_created_date_desc (actual time=0.055..0.098 rows
 
 <br>
 
-#### <COUNT 쿼리>
+#### COUNT 쿼리
 - 실행 계획 **변화 없음**
 
 <br>
@@ -268,8 +268,8 @@ CREATE INDEX idx_board_deleted_at_created_date_desc ON board (deleted_at, create
 
 <br>
 
-#### <메인 쿼리> 
-**Explain**  
+#### 메인 쿼리 
+**\<Explain\>**  
 
 |      | 단일 컬럼 인덱스 적용 | 멀티 컬럼 인덱스 적용 |
 |:----:|:---:|:---:|
@@ -281,7 +281,7 @@ CREATE INDEX idx_board_deleted_at_created_date_desc ON board (deleted_at, create
 
 <br>
 
-**Explain Analyze**  
+**\<Explain Analyze\>**  
 ```sql
 Index lookup on b using idx_board_deleted_at_created_date_desc 
 (deleted_at=NULL), with index condition: (b.deleted_at is null) 
@@ -291,8 +291,8 @@ Index lookup on b using idx_board_deleted_at_created_date_desc
 
 <br>
 
-#### <COUNT 쿼리>
-**Explain**  
+#### COUNT 쿼리
+**\<Explain\>**  
 
 |      | 단일 컬럼 인덱스 적용 | 멀티 컬럼 인덱스 적용 |
 |:----:|:---:|:---:|
@@ -304,7 +304,7 @@ Index lookup on b using idx_board_deleted_at_created_date_desc
 
 <br>
 
-**Explain Analyze**  
+**\<Explain Analyze\>**  
 ```sql
 Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted_at=NULL) 
 (actual time=0.0453..271 rows=899962 loops=1)
