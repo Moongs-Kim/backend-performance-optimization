@@ -692,8 +692,7 @@ LIMIT 0, 10;
 <details>
 <summary><h2>3. AWS VPC를 활용한 보안, 고가용성 인프라 구축</h2></summary>
 
-### [설계 및 개선 내용]
-#### VPC 재구성 후 인프라 구조  
+### [VPC 재구성 후 인프라 구조]  
 ![VPC 재구성 후 인프라 구조](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/aws-infra/image/AWS%20%EC%9D%B8%ED%94%84%EB%9D%BC%20%EA%B5%AC%EC%A1%B0.png)
 
 <br>
