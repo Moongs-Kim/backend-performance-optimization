@@ -268,7 +268,7 @@ CREATE INDEX idx_board_deleted_at_created_date_desc ON board (deleted_at, create
 
 <br>
 
-#### 메인 쿼리 
+#### <메인 쿼리> 
 **Explain**  
 
 |      | 단일 컬럼 인덱스 적용 | 멀티 컬럼 인덱스 적용 |
@@ -291,7 +291,7 @@ Index lookup on b using idx_board_deleted_at_created_date_desc
 
 <br>
 
-#### COUNT 쿼리
+#### <COUNT 쿼리>
 **Explain**  
 
 |      | 단일 컬럼 인덱스 적용 | 멀티 컬럼 인덱스 적용 |
