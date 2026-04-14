@@ -7,7 +7,7 @@
 <br>
 
 <details>
-<summary>## 1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)</summary>
+<summary><strong>1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)</strong></summary>
 
 ### [부하 테스트 환경]
 
