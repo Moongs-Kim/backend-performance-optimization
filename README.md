@@ -152,10 +152,10 @@ spring:
 
 #### 2. DB 쿼리 성능을 확인하기 위해 응답 소요 시간 확인
 
-|         |  응답 소요 시간  |                                                                                                                                                   측정 시간                                                                                                                                                    |
-|:------------:|:----------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-|    메인 쿼리     |   약 2.8초   |                ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EA%B0%9C%EC%84%A0%20%EC%A0%84%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png)                |
-| **COUNT 쿼리** | **약 1.7초** | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%B9%B4%EC%9A%B4%ED%8A%B8%20%EC%BF%BC%EB%A6%AC%20%EA%B0%9C%EC%84%A0%20%EC%A0%84%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
+|          | 응답 소요 시간 |                                                                                                                                                   측정 시간                                                                                                                                                    |
+|:--------:|:--------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|  메인 쿼리   |  약 2.8초  |                ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EA%B0%9C%EC%84%A0%20%EC%A0%84%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png)                |
+| COUNT 쿼리 |  약 1.7초  | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%B9%B4%EC%9A%B4%ED%8A%B8%20%EC%BF%BC%EB%A6%AC%20%EA%B0%9C%EC%84%A0%20%EC%A0%84%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
 
 <br>
 
@@ -353,10 +353,10 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 ### [추가 개선 포인트]
 - OFFSET 기반 페이징에서 페이지 증가 시 성능 저하 발생
 
-|                               |  응답 소요 시간  |                                                                                                                                                                  측정 시간                                                                                                                                                                  |
-|:-----------------------------:|:----------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-|   OFFSET 0 (`LIMIT 0, 10`)    |  약 0.007초  | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
-| OFFSET 5000(`LIMIT 5000, 10`) | **약 2.7초** |                                       ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20OFFSET%205000%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png)                                        |
+|                               | 응답 소요 시간 |                                                                                                                                                                  측정 시간                                                                                                                                                                  |
+|:-----------------------------:|:--------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|   OFFSET 0 (`LIMIT 0, 10`)    | 약 0.007초 | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
+| OFFSET 5000(`LIMIT 5000, 10`) |  약 2.7초  |                                       ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20OFFSET%205000%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png)                                        |
 
 <br>
 
