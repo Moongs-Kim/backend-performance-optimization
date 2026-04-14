@@ -102,10 +102,6 @@ WHERE
 
 <br>
 
-- **이를 통해 요청 대기(Queue)로 인한 병목 발생으로 판단**
-
-<br>
-
 ### [병목 원인 분석]
 1. **HikariCP 커넥션 풀 확장 후 다시 테스트 진행**
 ```YAML
@@ -150,11 +146,6 @@ spring:
 #### k6 로그
 ![k6 로그](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/k6%20Request%20timeout(%EA%B0%9C%EC%84%A0%20%EC%A0%84).png)
 - 동일하게 Request timeout으로 인한 Request Failed 발생
-
-<br>
-
-- DB 커넥션 풀을 확장해도 큰 변화 없음
-- **DB 커넥션 부족이 근본적인 원인이 아님을 파악**
 
 <br>
 
@@ -203,8 +194,12 @@ Table scan on b (actual time=2.16..1594 rows=1e+6 loops=1)
 
 <br>
 
-- 메인 쿼리에서 **풀테이블 스캔**과 **약 90만 건 정렬**이 주요 병목임을 확인
-- COUNT 쿼리에서 **풀테이블 스캔**이 주요 병목임을 확인
+- 메인 쿼리 주요 병목
+  - 풀테이블 스캔: **약 0.5초**
+  - 정렬: **약 2.3초**
+
+- COUNT 쿼리 주요 병목
+  - 풀테이블 스캔: **약 1.6초**
 
 <br>
 
@@ -318,14 +313,9 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 
 <br>
 
-- **멀티 컬럼 인덱스로 ‘메인 쿼리’ 및 ‘COUNT 쿼리’ 의 성능을 개선 가능**
-- **인덱스 기반 필터링으로 불필요한 테이블 접근을 최소화 시킬 수 있어 멀티 컬럼 인덱스를 적용하기로 판단**
-
-<br>
-
 ### [부하 테스트 재검증]
 
-- 멀티 컬럼 인덱스 적용
+- 멀티 컬럼 인덱스 적용 후 부하 테스트 재측정
 
 <br>
 
@@ -355,7 +345,7 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 <br>
 
 ### [추가 개선 포인트]
-- OFFSET 기반 페이징에서 페이지 증가 시 성능 저하가 발생하는 문제를 확인
+- OFFSET 기반 페이징에서 페이지 증가 시 성능 저하 발생 문제
 
 |     OFFSET 0 (`LIMIT 0, 10`)      |  약 0.007초  | ![소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/%EA%B2%8C%EC%8B%9C%EA%B8%80%20%EC%B5%9C%EC%8B%A0%EC%88%9C%20%EC%A1%B0%ED%9A%8C%20%EB%A9%80%ED%8B%B0%20%EC%BB%AC%EB%9F%BC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%86%8C%EC%9A%94%EC%8B%9C%EA%B0%84.png) |
 |:---------------------------------:|:----------:|:----------:|
