@@ -75,10 +75,14 @@ WHERE
 <br>
 
 #### AWS CloudWatch 대시보드
-![AWS CloudWatch 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/EC2%2C%20RDS%20-%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0(%EA%B0%9C%EC%84%A0%20%EC%A0%84).png)
+![AWS CloudWatch EC2 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/EC2%20-%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0(%EA%B0%9C%EC%84%A0%20%EC%A0%84).png)
 - EC2 서버 2대
     - CPU 사용률 **3.76% 이하**
     - Memory 사용률 **59.2% 이하**
+
+<br>
+
+![AWS CloudWatch RDS 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/RDS%20-%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0(%EA%B0%9C%EC%84%A0%20%EC%A0%84).png)
 - RDS
     - CPU 사용률 **35.6% 이하**
     - 사용 가능한 메모리양 **110.4M 이상**   
@@ -121,10 +125,14 @@ spring:
 <br>
 
 #### AWS CloudWatch 대시보드
-![AWS CloudWatch 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/connection%20pool/EC2%2C%20RDS%20-%20%EC%BB%A4%EB%84%A5%EC%85%98%20%ED%92%80%20%ED%99%95%EC%9E%A5%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
+![AWS CloudWatch EC2 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/connection%20pool/EC2%20-%20%EC%BB%A4%EB%84%A5%EC%85%98%20%ED%92%80%20%ED%99%95%EC%9E%A5%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
 - EC2 서버 2대
     - CPU 사용률 **3.58% 이하**
     - Memory 사용률 **57.9% 이하**
+
+<br>
+
+![AWS CloudWatch RDS 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/connection%20pool/RDS%20-%20%EC%BB%A4%EB%84%A5%EC%85%98%20%ED%92%80%20%ED%99%95%EC%9E%A5%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
 - RDS
     - CPU 사용률 **36.5% 이하**
     - 사용 가능한 메모리양 **93.95M 이상**
@@ -326,10 +334,14 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 <br>
 
 #### AWS CloudWatch 대시보드
-![AWS CloudWatch 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/EC2%2C%20RDS%20-%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
+![AWS CloudWatch EC2 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/EC2%20-%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
 - EC2 서버 2대
     - CPU 사용률 **9.77% 이하**
     - Memory 사용률 **60.2% 이하**
+
+<br>
+
+![AWS CloudWatch RDS 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/RDS%20-%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
 - RDS
     - CPU 사용률 **99.6% 이하**
     - 사용 가능한 메모리양 **104.1M 이상**
