@@ -6,7 +6,8 @@
 
 <br>
 
-## 1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)
+<details>
+<summary>## 1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)</summary>
 
 ### [부하 테스트 환경]
 
@@ -204,7 +205,7 @@ Table scan on b (actual time=2.16..1594 rows=1e+6 loops=1)
 <br>
 
 ### [성능 개선 - 인덱스 설계]
-#### 1. **단일 컬럼 인덱스 적용**
+#### 1. 단일 컬럼 인덱스 적용
 ```sql
 CREATE INDEX idx_board_created_date_desc ON board (created_date DESC);
 ```
@@ -249,7 +250,7 @@ Index scan on b using idx_board_created_date_desc (actual time=0.055..0.098 rows
 
 <br>
 
-#### 2. **멀티 컬럼 인덱스 적용**  
+#### 2. 멀티 컬럼 인덱스 적용  
 ```sql
 CREATE INDEX idx_board_deleted_at_created_date_desc ON board (deleted_at, created_date DESC);
 ```
@@ -379,6 +380,8 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 ```
 
 - 5010건의 데이터 스캔으로 인한 JOIN 까지 소요된 시간: **2686ms → 약 2.7초** (1초 + 1.7초)
+
+</details>
 
 <br>
 
