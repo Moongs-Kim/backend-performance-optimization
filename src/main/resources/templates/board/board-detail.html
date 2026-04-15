@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/base-layout :: base-layout(
+            ~{::title}, ~{::link}, ~{::script},
+            ~{fragment/main-layout :: main-layout(~{::main})}
+      )}">
+<head>
+    <title>Predawn Days Board</title>
+    <link rel="stylesheet" th:href="@{/css/common/main-common.css}">
+    <link rel="stylesheet" th:href="@{/css/board/board-list.css}">
+    <link rel="stylesheet" th:href="@{/css/board/board-detail.css}">
+    <script th:src="@{/js/board/detail/board-detail.js}" defer></script>
+    <script th:src="@{/js/board/detail/board-detail-for-view-count.js}"></script>
+    <script th:src="@{/js/board/detail/board-detail-for-like.js}" defer></script>
+    <script th:src="@{/js/board/detail/board-detail-for-comment.js}" defer></script>
+    <script th:src="@{/js/board/detail/board-detail-for-reply.js}" defer></script>
+</head>
+<body>
+<main>
+    <div class="main-inner">
+
+        <article class="post-card" th:data-board-id="${boardDetail.boardId}">
+
+            <div class="post-header">
+                <h1 class="post-title" th:text="${boardDetail.title}">게시글 제목 예시입니다</h1>
+
+                <div class="post-meta">
+                    <span class="post-writer" th:text="${boardDetail.boardWriter}">김범진</span>
+                    <span class="post-date" th:text="${boardDetail.boardCreatedTime}">2026-01-30 14:22</span>
+                    <span class="post-view" th:text="|조회 ${boardDetail.viewCount}|">조회 128</span>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <p th:text="${boardDetail.boardContent}">게시글 내용</p>
+            </div>
+
+            <div class="post-files">
+                <h3>첨부파일</h3>
+                <a class="file-item" th:each="uploadFile : ${boardDetail.uploadFiles}"
+                   th:href="@{/api/board/{boardId}/file/{fileId}(boardId=${boardDetail.boardId}, fileId=${uploadFile.uploadFileId})}"
+                   th:text="${uploadFile.uploadFileName}">project-spec.pdf</a>
+                <span class="file-empty" th:if="${boardDetail.uploadFiles.isEmpty()}">첨부파일이 없습니다</span>
+            </div>
+
+            <div class="post-actions">
+                <button class="like-btn" th:classappend="${boardDetail.isLiked} ? 'like-check'"
+                    th:data-is-liked="${boardDetail.isLiked}">
+                    ♥ <span id="like-count" th:text="${boardDetail.likeCount}">32</span>
+                </button>
+            </div>
+
+            <div class="form-actions" th:if="${isReaderSameWriter}">
+                <button type="button" class="update-btn">수정하기</button>
+            </div>
+
+        </article>
+
+        <section class="comment-section" th:with="commentResult = ${boardDetail.commentResult}">
+            <h2>댓글</h2>
+
+            <div class="comment-form">
+                <textarea id="comment-textarea" placeholder="댓글을 입력하세요"></textarea>
+                <button type="button" class="comment-submit-btn">등록</button>
+            </div>
+
+            <div class="comment-list">
+
+                <div class="comment" th:each="comment : ${commentResult.comments}" th:data-comment-id="${comment.commentId}">
+                    <div class="comment-meta">
+                        <span class="comment-writer" th:text="${comment.commentWriter}">관리자</span>
+                        <span class="comment-date" th:text="${comment.commentCreatedTime}">2026-01-30 15:01</span>
+                    </div>
+                    <p class="comment-content" th:text="${comment.commentContent}">좋은 글 잘 읽었습니다.</p>
+
+                    <div class="comment-actions">
+                        <button class="reply-btn">답글 달기</button>
+                        <button class="reply-toggle-btn" th:classappend="${comment.replyCount > 0} ? '' : 'hidden'" th:data-reply-count="${comment.replyCount}">
+                            답글 보기 <span class="reply-count" th:text="|(${comment.replyCount})|">(1)</span>
+                        </button>
+                    </div>
+
+                    <div class="reply-section">
+                        <div class="reply-form">
+                            <textarea class="reply-textarea" placeholder="답글을 입력하세요"></textarea>
+                            <button type="button" class="reply-submit-btn">등록</button>
+                        </div>
+
+                        <div class="reply-list hidden"></div>
+
+                        <button class="reply-more-btn hidden">답글 더보기 ▼</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="comment-more-btn" th:if="${commentResult.hasNext}"
+                    th:data-last-comment-id="${commentResult.lastCommentId}">댓글 더보기 ▼</button>
+        </section>
+
+    </div>
+</main>
+</body>
+</html>

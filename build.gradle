@@ -46,9 +46,16 @@ dependencies {
     //MySQL Connector
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
+    //H2
+    runtimeOnly 'com.h2database:h2'
+
     //Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    //shedlock, shedlock-jdbc-provider
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:5.8.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.8.0'
 
     //spring-session-jdbc
     implementation 'org.springframework.session:spring-session-jdbc'

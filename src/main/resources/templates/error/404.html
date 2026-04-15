@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/error-layout :: error-layout(~{::.content})}">
+<body>
+    <th:block class="content">
+        <h1 class="error-title" th:text="${message} ?: _">자료를 찾을 수 없습니다</h1>
+
+        <p class="error-description">
+            요청하신 자료가 존재하지 않거나 이동되었습니다
+        </p>
+
+        <div class="error-actions">
+            <button class="home-btn">흠으로 이동</button>
+            <button class="back-btn">이전 페이지</button>
+        </div>
+
+    </th:block>
+</body>
+</html>

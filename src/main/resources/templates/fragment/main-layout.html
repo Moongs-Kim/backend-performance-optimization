@@ -1,0 +1,42 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="main-layout (main)">
+
+    <header>
+        <div class="header-left"><a href="/" th:text="'Predawn Days'">LOGO</a></div>
+
+        <nav class="header-center">
+            <div class="nav-item dropdown">
+                <a href="javascript:void(0);" class="dropdown-toggle">Board</a>
+                <ul class="dropdown-menu">
+                    <li><a href="/board/write">게시판 작성</a></li>
+                    <li><a href="/boards">게시판 조회</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="header-right">
+            <div class="header-profile" th:if="${session.loginMember}">
+                <img th:src="@{${session.loginMember.filePath ?: '/images/default-profile.svg'}}" alt="프로필 이미지" class="profile-img">
+                <span class="profile-name" th:text="${session.loginMember.name}">테스터</span>
+            </div>
+            <button type="button" class="login-btn"
+                    th:data-login-toggle="${session.loginMember == null ? 'login' : 'logout'}"
+                    th:text="${session.loginMember == null ? '로그인' : '로그아웃'}">
+            </button>
+        </div>
+    </header>
+
+
+    <div class="layout">
+        <aside>
+            <h2>Board</h2>
+            <ul>
+                <li><a href="/board/write">게시판 작성</a></li>
+                <li><a href="/boards">게시판 조회</a></li>
+            </ul>
+        </aside>
+
+        <main th:replace="${main}"></main>
+    </div>
+
+    <script th:src="@{/js/main-common.js}" defer></script>
+</th:block>

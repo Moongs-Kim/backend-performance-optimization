@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/error-layout :: error-layout(~{::.content})}">
+<body>
+    <th:block class="content">
+        <h1 class="error-title">서버에 오류가 발생하였습니다</h1>
+
+        <p class="error-description">
+            죄송합니다. 나중에 다시 요청해 주세요.
+        </p>
+
+        <div class="error-actions">
+            <button class="home-btn">흠으로 이동</button>
+            <button class="back-btn">이전 페이지</button>
+        </div>
+
+    </th:block>
+</body>
+</html>

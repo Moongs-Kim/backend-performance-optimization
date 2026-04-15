@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:fragment="error-layout (content)" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predawn Days Error</title>
+
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+    <link rel="stylesheet" th:href="@{/css/common/not-main-footer.css}">
+    <link rel="stylesheet" th:href="@{/css/error/error.css}">
+
+    <script th:src="@{/js/error/error.js}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="error-wrapper">
+            <div class="logo-area">
+                <a href="/">Predawn Days</a>
+            </div>
+
+            <th:block th:replace="${content}"></th:block>
+
+            <div class="error-code" th:text="|Error ${status}|">Error 404</div>
+        </div>
+    </div>
+
+    <footer>© 2026 Predawn Days</footer>
+</body>
+</html>

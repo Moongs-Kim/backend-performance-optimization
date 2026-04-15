@@ -1,0 +1,80 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 30m
+
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: predawn-days
+
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never
+      table-name: SPRING_SESSION
+
+  datasource:
+    url: jdbc:h2:mem:predawn_days;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  sql:
+    init:
+      mode: always
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  messages:
+    basename: messages, errors
+
+local:
+  file:
+    dir: C:/My-Project/upload/
+    view: /upload
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  sql:
+    init:
+      data-locations: classpath:data-small.sql
+
+logging.level:
+  org.hibernate:
+    SQL: debug
+    orm.jdbc.bind: trace
+
+---
+spring:
+  config:
+    activate:
+      on-profile: load
+
+  sql:
+    init:
+      data-locations: ""

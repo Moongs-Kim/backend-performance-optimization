@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/base-layout :: base-layout(
+            ~{::title}, ~{::link}, ~{::script}, ~{::div[@class='container']})}">
+<head>
+    <title>Predawn Days Signup</title>
+    <link rel="stylesheet" th:href="@{/css/member/signup.css}">
+    <link rel="stylesheet" th:href="@{/css/common/not-main-footer.css}">
+    <script th:src="@{/js/member/signup/signup-for-id-duplication-check.js}" defer></script>
+    <script th:src="@{/js/member/signup/signup-for-profile-image.js}" defer></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script th:src="@{/js/member/signup/signup-daum-address-api.js}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="signup-box">
+            <div class="logo"><a href="/" th:text="'Predawn Days'">LOGO</a></div>
+
+            <form action="/signup" method="post" enctype="multipart/form-data" th:object="${signupForm}">
+
+                <div class="form-group">
+                    <label for="loginId">로그인 ID</label>
+                    <div class="form-row">
+                        <input type="text" th:field="*{loginId}" placeholder="아이디 입력">
+                        <input type="hidden" th:field="*{idDuplicationCheck}">
+                        <button type="button" class="check-btn" id="id-duplication-check-btn">중복 확인</button>
+                    </div>
+                    <span class="field-error" th:errors="*{loginId}">아이디를 입력해 주세요</span>
+                    <span class="field-error" th:errors="*{idDuplicationCheck}" data-login-id="error">
+                        중복 확인을 해주세요</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" th:field="*{password}" placeholder="비밀번호 입력">
+                    <span class="field-error" th:errors="*{password}">비밀번호를 입력해 주세요</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="passwordCheck">비밀번호 확인</label>
+                    <input type="password" th:field="*{passwordCheck}" placeholder="비밀번호 확인">
+                    <span class="field-error" th:errors="*{passwordCheck}">비밀번호 확인을 입력해 주세요</span>
+                    <span class="field-error" th:if="${#fields.hasGlobalErrors()}"
+                          th:each="err : ${#fields.globalErrors()}" th:text="${err}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">이름</label>
+                    <input type="text" th:field="*{name}" placeholder="이름 입력">
+                    <span class="field-error" th:errors="*{name}">이름을 입력해 주세요</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthDate">생년월일</label>
+                    <input type="date" th:field="*{birthDate}">
+                    <span class="field-error" th:errors="*{birthDate}">생년월일을 입력해 주세요</span>
+                </div>
+
+                <div class="form-group">
+                    <label>성별</label>
+                    <div class="radio-group">
+                        <label th:for="${#ids.next('gender')}" th:each="gender : ${genders}" class="radio-btn" >
+                            <input type="radio" th:field="*{gender}" th:value="${gender.name()}">
+                            <span th:text="${gender.description}">남성</span>
+                        </label>
+                    </div>
+                    <span class="field-error" th:errors="${signupForm.gender}">성별을 선택해 주세요</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="text" th:field="*{email}" placeholder="example@email.com">
+                    <span class="field-error" th:errors="*{email}">이메일을 입력해 주세요</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">주소</label>
+                    <div class="form-row">
+                        <input type="text" th:field="*{address}" placeholder="주소 입력" readonly>
+                        <button type="button" class="check-btn" id="address-check-btn">주소 선택</button>
+                    </div>
+                    <span class="field-error" th:errors="*{address}">주소를 입력해 주세요</span>
+                </div>
+
+                <div class="form-group">
+                    <label>프로필 사진</label>
+                    <div class="form-row">
+                        <input type="text" class="file-name" placeholder="파일 선택" readonly>
+                        <input type="file" th:field="*{profileImage}" accept=".jpg, .jpeg, .png, .gif" hidden>
+                        <button type="button" class="check-btn" id="fileSelectBtn">파일 선택</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">회원가입</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

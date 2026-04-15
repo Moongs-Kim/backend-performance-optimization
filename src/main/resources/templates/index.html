@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/base-layout :: base-layout(
+            ~{::title}, ~{::link}, ~{::script},
+            ~{fragment/main-layout :: main-layout(~{::main})}
+        )}">
+<head>
+    <title>Predawn Days</title>
+    <link rel="stylesheet" th:href="@{/css/common/main-common.css}">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script th:src="@{/js/home/home.js}" defer></script>
+</head>
+<body>
+    <main>
+        <h1>최신 인기 게시글</h1>
+        <div class="content-grid" th:unless="${boardList.isEmpty()}">
+            <div class="card" th:each="board : ${boardList}" th:data-board-id="${board.boardId}">
+                <div class="card-title">
+                    <span th:text="${board.title}">게시글 제목</span>
+                </div>
+
+                <div class="card-meta">
+                    <span th:text="${board.memberName}">작성자</span>
+                </div>
+
+                <div class="card-meta">
+                    <span th:text="${board.createdBoardDate}">2026-01-28</span>
+                </div>
+
+                <div class="card-stats">
+                    <span th:text="|♥ ${board.likeCount}|">♥ 70</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="board-empty" th:if="${boardList.isEmpty()}">
+            <div class="empty-inner">
+                <div class="empty-icon">○</div>
+
+                <h3 class="empty-title">아직 작성된 게시글이 없습니다</h3>
+
+                <a href="/board/write" class="empty-write-btn">
+                    게시판 작성하기
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

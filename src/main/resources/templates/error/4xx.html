@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/error-layout :: error-layout(~{::.content})}">
+<body>
+    <th:block class="content">
+        <h1 class="error-title">요청을 처리할 수 없습니다</h1>
+
+        <p class="error-description" th:text="${message} ?: _">
+            요청 사항을 확인해 주세요.
+        </p>
+
+        <div class="error-actions">
+            <button class="home-btn">흠으로 이동</button>
+            <button class="back-btn">이전 페이지</button>
+        </div>
+
+    </th:block>
+</body>
+</html>

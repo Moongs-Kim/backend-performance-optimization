@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/base-layout :: base-layout(
+            ~{::title}, ~{::link}, ~{::script},
+            ~{fragment/main-layout :: main-layout(~{::main})}
+      )}">
+<head>
+    <title>Predawn Days Board Write</title>
+    <link rel="stylesheet" th:href="@{/css/common/main-common.css}">
+    <link rel="stylesheet" th:href="@{/css/board/board-write.css}">
+    <script th:src="@{/js/board/write/board-write.js}" defer></script>
+    <script th:src="@{/js/board/write/board-write-file.js}" defer></script>
+    <script th:src="@{/js/board/write/board-write-submit.js}" defer></script>
+</head>
+<body>
+<main>
+    <div class="main-inner">
+        <h1>게시글 작성</h1>
+        <form class="post-form" enctype="multipart/form-data">
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="categoryName">카테고리</label>
+                    <select th:field="${postForm.categoryName}">
+                        <option th:each="category : ${categories}"
+                                th:value="${category.name()}"
+                                th:text="${category.description}">자유게시판</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>공개 여부</label>
+                    <div class="radio-group">
+                        <label th:for="${#ids.next('boardOpen')}" th:each="boardOpen : ${boardOpens}" class="radio-btn">
+                            <input type="radio" th:field="${postForm.boardOpen}" th:value="${boardOpen.name()}">
+                            <span th:text="|${boardOpen.description} 공개|">전체 공개</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="title">제목</label>
+                <input type="text" th:field="${postForm.title}" placeholder="제목을 입력하세요">
+            </div>
+
+
+            <div class="form-group">
+                <label for="content">내용</label>
+                <div class="textarea-wrap">
+                    <textarea th:field="${postForm.content}" rows="18" maxlength="5000" placeholder="내용을 입력하세요"></textarea>
+                    <div class="char-count">
+                        <span id="current-count">0</span> / 5000
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="fileNameInput">첨부파일</label>
+                <div class="file-row">
+                    <input type="text" id="fileNameInput" placeholder="선택된 파일 없음" readonly>
+                    <input type="file" th:field="${postForm.attachFiles}" multiple accept=".jpg, .jpeg, .png, .gif, .pdf, .txt" hidden>
+                    <button type="button" class="file-btn" id="fileSelectBtn">파일 선택</button>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">게시글 등록</button>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

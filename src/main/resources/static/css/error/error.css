@@ -1,0 +1,78 @@
+body {
+    background-image: url('../../images/background-image.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.error-wrapper {
+    width: 500px;
+    height: 450px;
+    text-align: center;
+    padding: 60px 40px;
+    background-color: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.logo-area {
+    margin-bottom: 50px;
+}
+
+.logo-area a {
+    font-weight: 600;
+    font-size: 45px;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+    color: var(--accent-green);
+}
+
+.error-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 14px;
+}
+
+.error-description {
+    font-size: 16px;
+    color: var(--text-sub);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.error-actions button {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid var(--accent-green);
+    background-color: white;
+    color: var(--accent-green);
+    transition: all 0.2s ease;
+}
+
+.error-actions button:hover {
+    background-color: var(--accent-green);
+    color: white;
+}
+
+.error-code {
+    font-size: 12px;
+    color: var(--text-sub);
+    letter-spacing: 1px;
+}

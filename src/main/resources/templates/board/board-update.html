@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/base-layout :: base-layout(
+            ~{::title}, ~{::link}, ~{::script},
+            ~{fragment/main-layout :: main-layout(~{::main})}
+      )}">
+<head>
+    <title>Predawn Days Board Update</title>
+    <link rel="stylesheet" th:href="@{/css/common/main-common.css}">
+    <link rel="stylesheet" th:href="@{/css/board/board-update.css}">
+    <script th:src="@{/js/board/update/board-update.js}" defer></script>
+    <script th:src="@{/js/board/update/board-update-file.js}" defer></script>
+    <script th:src="@{/js/board/update/board-delete.js}" defer></script>
+</head>
+<body>
+<main>
+    <div class="main-inner" th:data-board-id="${board.boardId}">
+        <h1>게시글 수정</h1>
+
+        <form class="post-form" id="board-form">
+            <h2 class="section-title">게시글 내용 수정</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="categoryName">카테고리</label>
+                    <select id="categoryName" name="categoryName">
+                        <option th:each="category : ${categories}"
+                                th:value="${category.name()}"
+                                th:text="${category.description}"
+                                th:selected="${category.name() == board.categoryName.name()}">자유게시판</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>공개 여부</label>
+                    <div class="radio-group" id="radio-div">
+                        <label class="radio-btn" th:each="boardOpen, boardOpenStat : ${boardOpens}">
+                            <input type="radio" name="boardOpen"
+                                   th:id="|boardOpen${boardOpenStat.count}|"
+                                   th:value="${boardOpen.name()}"
+                                   th:checked="${boardOpen.name() == board.boardOpen.name()}">
+                            <span th:text="|${boardOpen.description} 공개|">전체 공개</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="title">제목</label>
+                <input type="text" id="title" name="title" th:value="${board.title}">
+            </div>
+
+            <div class="form-group">
+                <label for="content">내용</label>
+                <div class="textarea-wrap">
+                    <textarea id="content" name="content" rows="18" maxlength="5000" th:text="${board.content}">기존 내용입니다.</textarea>
+                    <div class="char-count">
+                        <span id="current-count">0</span> / 5000
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="submit-btn">게시글 수정</button>
+            </div>
+        </form>
+
+        <form class="post-form" id="file-form" enctype="multipart/form-data">
+            <h2 class="section-title">첨부파일 관리</h2>
+
+            <div class="existing-files">
+                <div class="file-item" th:each="fileResponse : ${board.fileResponses}" th:data-file-id="${fileResponse.uploadFileId}">
+                    <span class="file-name" th:text="${fileResponse.uploadFileName}">sample1.jpg</span>
+                    <button type="button" class="file-delete-btn">✕</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="fileNameInput">첨부파일 추가</label>
+                <div class="file-row">
+                    <input type="text" id="fileNameInput" placeholder="선택된 파일 없음" readonly>
+                    <input type="file" id="fileInput" multiple accept=".jpg, .jpeg, .png, .gif, .pdf, .txt" hidden>
+                    <button type="button" class="file-btn">파일 선택</button>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="file-submit-btn">첨부파일 등록</button>
+            </div>
+        </form>
+
+        <div class="delete-section">
+            <button type="button" class="delete-btn">게시글 삭제</button>
+        </div>
+
+    </div>
+</main>
+</body>
+</html>

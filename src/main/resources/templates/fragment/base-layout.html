@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:fragment="base-layout (title, links, scripts, content)" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:replace="${title}">base layout title</title>
+
+    <link rel="stylesheet" th:href="@{/css/common/common.css}">
+
+    <script th:src="@{/js/error/api-error-response.js}"></script>
+
+    <th:block th:replace="${links}"></th:block>
+    <th:block th:replace="${scripts}"></th:block>
+</head>
+<body>
+    <th:block th:replace="${content}"></th:block>
+
+    <footer>© 2026 Predawn Days</footer>
+</body>
+</html>
