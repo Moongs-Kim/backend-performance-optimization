@@ -32,7 +32,7 @@ public class LocalWebConfig implements WebMvcConfigurer {
                         "/", "/signup", "/api/signup/id-check", "/login", "/logout",
                         "/css/**", "/js/**", "/images/**", "/*.ico",
                         "/health", "/ip", "/error",
-                        "/h2-console", "/api/dev/boards", "/dev/login-test"
+                        "/h2-console", "/api/dev/**", "/dev/login-test"
                 );
     }
 }
