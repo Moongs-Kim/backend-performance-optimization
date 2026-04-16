@@ -508,6 +508,8 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 <br>
 
+(자세히 보기↓↓)
+
 <details>
 <summary><h2>2. 트레이드 오프 기반 게시판 정렬 기능 설계</h2></summary>
 
@@ -809,12 +811,22 @@ LIMIT 0, 10;
 | 약 0.067초 | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
 </details>
 
+<br>
+
+### [트레이드 오프 기반 게시판 정렬 기능 최종 성능 변화]
+#### 응답 소요 시간
+
+| 상관 서브쿼리 | 게시글 최신 100건 기준 좋아요 수 정렬 쿼리 |
+|:---:|:--------------------------:|
+| 약 6.8초 |          약 0.074초          |
 
 <br>
 
 ---
 
 <br>
+
+(자세히 보기↓↓)
 
 <details>
 <summary><h2>3. AWS VPC를 활용한 보안, 고가용성 인프라 구축</h2></summary>
