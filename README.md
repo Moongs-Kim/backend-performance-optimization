@@ -157,6 +157,7 @@ WHERE
 
 #### 게시글 최신순 조회 코드
 1. Repository  
+<br>
 <메인 쿼리 코드>
 ```java
 List<BoardListQueryDto> content = queryFactory
@@ -196,14 +197,13 @@ JPAQuery<Long> query = queryFactory
 ```
 - Querydsl 기반 동적 조인
 
-[BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L40-L86)
+☞ [BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L40-L86)
 
 <br>
 
 2. Service
 
-
-[BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L98-L122)
+☞ [BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L98-L122)
 
 <br>
 
