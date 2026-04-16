@@ -6,8 +6,10 @@
 ### 2. 대용량 데이터 실행 (성능 테스트)
 - 실행 옵션: `--spring.profiles.active=load`
 
-※ load 환경에서는 Java 기반으로 대량 데이터가 생성됩니다.
+※ load 환경에서는 Java 기반으로 대량 데이터가 생성됩니다. <br>
 ※ 메모리 DB(H2) 기반으로 빠른 실행을 위해 게시글/회원 데이터 각각 10만, 좋아요 2만 데이터로 구성하였습니다.
+
+<br>
 
 ## [API 테스트 방법]
 ### 1. 게시글 최신순 조회
@@ -15,6 +17,8 @@ GET
 ```url
 /api/dev/boards
 ```
+
+<br>
 
 ### 2. 게시글 최신 100건 기준 좋아요 수 정렬 조회
 GET
@@ -24,15 +28,11 @@ GET
 
 → JSON 응답으로 바로 결과 확인 가능
 
+<br>
+
 ※ 개발 및 테스트 편의를 위해 `/api/dev/**` 경로는 인증 없이 호출 가능하도록 구성했습니다.
 
-→ JSON 응답으로 바로 결과 확인 가능
-
-## H2 콘솔 접속
-- URL: http://localhost:8080/h2-console
-- JDBC URL: jdbc:h2:mem:testdb
-- Username: sa
-- Password: (공백)
+<br>
 
 ## 브라우저 테스트 방법 (UX 확인)
 ### 1. Mock 로그인
@@ -49,7 +49,19 @@ GET
 /boards
 ```
 
+<br>
+
+## H2 콘솔 접속
+- URL: http://localhost:8080/h2-console
+- JDBC URL: `jdbc:h2:mem:testdb`
+- Username: `sa`
+- Password: (공백)
+
+<br>
+
 ---
+
+<br>
 
 <details>
 <summary><h2>1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)</h2></summary>
