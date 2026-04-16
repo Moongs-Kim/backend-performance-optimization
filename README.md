@@ -897,7 +897,7 @@ CREATE index idx_board_deleted_at_created_date_desc ON board (deleted_at, create
        "       (b.id, b.title, b.viewCount, b.createdDate, m.name, lc.likeCount)" +
        " FROM Board b" +
        " JOIN b.member m" +
-       " LEFT join (" +
+       " LEFT JOIN (" +
        "      SELECT l.board.id AS boardId, count(l) AS likeCount" +
        "      FROM Like l" +
        "      WHERE l.board.id In :boardIds" +
