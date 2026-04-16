@@ -91,6 +91,8 @@ jdbc:h2:mem:testdb
 
 <br>
 
+(자세히 보기↓↓)
+
 <details>
 <summary><h2>1. 부하 테스트 기반 게시판 성능 개선 (k6 + 인덱스 최적화)</h2></summary>
 
@@ -484,8 +486,8 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 <br>
 
-### 부하 테스트 기반 게시판 성능 개선 최종 수치 변화
-#### RPS, Latency, Request Failed 수치 변화
+### [부하 테스트 기반 게시판 성능 개선 최종 수치 변화]
+#### RPS, Latency, Request Failed
 |                | 개선 전 | 개선 후 |
 |:--------------:|:---:|:---:|
 |      RPS       | 1.84/s | 25.78/s |
@@ -494,7 +496,7 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
 
 <br>
 
-#### DB 쿼리 - 인덱스 적용 전후 수치 변화
+#### DB 쿼리 - 인덱스 적용 전후
 |  | 개선 전 |   개선 후   |
 |:---:|:---:|:--------:|
 | 메인 쿼리 | 약 2.8초 | 약 0.007초 |
