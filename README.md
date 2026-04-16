@@ -156,28 +156,31 @@ WHERE
 <br>
 
 #### 게시글 최신순 조회 코드
-1. Repository
-메인 쿼리 코드
+1. Repository  
+<메인 쿼리 코드>
 ```java
 List<BoardListQueryDto> content = queryFactory
-                .select(Projections.constructor(BoardListQueryDto.class,
-                            board.id,
-                            board.title,
-                            board.viewCount,
-                            board.createdDate,
-                            member.name
-                        )
-                    )
-                .from(board)
-                .join(board.member, member)
-                .where(containsKeywordBy(boardSearchCond.getSearchType(), boardSearchCond.getKeyword()))
-                .orderBy(sortBy(boardSearchCond.getSortType()), board.id.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+        .select(Projections.constructor(BoardListQueryDto.class,
+                    board.id,
+                    board.title,
+                    board.viewCount,
+                    board.createdDate,
+                    member.name
+                )
+            )
+        .from(board)
+        .join(board.member, member)
+        .where(containsKeywordBy(boardSearchCond.getSearchType(), boardSearchCond.getKeyword()))
+        .orderBy(sortBy(boardSearchCond.getSortType()), board.id.asc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
 ```
 - Querydsl 기반 동적 검색 및 정렬
 
+<br>
+
+<COUNT 쿼리 코드>
 ```java
 JPAQuery<Long> query = queryFactory
                 .select(board.count())
