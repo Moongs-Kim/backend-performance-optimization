@@ -26,7 +26,7 @@ public class SupportRestController {
 
     private final BoardService boardService;
 
-    @GetMapping("/dev/api/boards")
+    @GetMapping("/api/dev/boards")
     public ResponseEntity<ApiResponse<?>> boardList(
             @ModelAttribute BoardsReqDto boardsReqDto
     ) {

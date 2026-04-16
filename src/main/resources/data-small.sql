@@ -53,6 +53,7 @@ VALUES
 (9, 1), (9, 2), (9, 3),
 (10, 1), (10, 2);
 
-
+CREATE INDEX idx_board_deleted_at_created_date_desc ON board (deleted_at, created_date DESC);
+CREATE INDEX idx_board_deleted_at_view_count_desc ON board (deleted_at, view_count DESC);
 
 
