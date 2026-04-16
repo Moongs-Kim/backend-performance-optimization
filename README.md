@@ -1,12 +1,18 @@
 ## 실행 방법
 
 ### 1. 일반 실행 (소량 데이터)
-- 실행 옵션: `--spring.profiles.active=dev`
+- 실행 옵션: 
+```text
+--spring.profiles.active=dev
+```
 
 <br>
 
 ### 2. 대용량 데이터 실행 (성능 테스트)
-- 실행 옵션: `--spring.profiles.active=load`
+- 실행 옵션: 
+```text
+--spring.profiles.active=load
+```
 
 ※ load 환경에서는 Java 기반으로 대량 데이터가 생성됩니다. <br>
 ※ 메모리 DB(H2) 기반으로 빠른 실행을 위해 <br> &nbsp;&nbsp;&nbsp; 게시글/회원 데이터 각각 10만, 좋아요 2만 데이터로 구성했습니다.
