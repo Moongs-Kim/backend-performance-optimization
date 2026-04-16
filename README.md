@@ -648,7 +648,7 @@ Nested loop inner join (actual time=0.776..2686 rows=5010 loops=1)
     -> Aggregate: count(l.like_id) 
         -> Covering index lookup on l using uq_board_member (board_id=b.board_id)
 ```
-- **Dependent Subquery 2번 실행**
+- **Dependent Subquery 2번 실행** (`Select #2 (dependent)`, `Select #3(dependent)`)
 
 <br>
 
