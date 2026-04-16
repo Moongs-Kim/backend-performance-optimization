@@ -113,7 +113,7 @@ jdbc:h2:mem:testdb
 
 #### 시나리오
 - 10분간 최대 50 가상 유저로 부하 테스트 수행
-```script
+```javascript
 export const options = {
     stages: [
         {duration: '10m', target: 50}
@@ -122,7 +122,7 @@ export const options = {
 ```
 
 - 로그인 후 게시글 조회 95%, 작성 5%
-```script
+```javascript
 const random = Math.random();
 
 if (random < 0.05) {
