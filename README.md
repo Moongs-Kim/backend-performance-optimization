@@ -28,6 +28,8 @@ GET
 http://localhost:8080/api/dev/boards?pageIndex=0&sortType=latest
 ```
 
+→ JSON 응답으로 바로 결과 확인 가능
+
 <br>
 
 ### 2. 게시글 최신 100건 기준 좋아요 수 정렬 조회
@@ -186,16 +188,16 @@ List<BoardListQueryDto> content = queryFactory
 <COUNT 쿼리 코드>
 ```java
 JPAQuery<Long> query = queryFactory
-                .select(board.count())
-                .from(board);
+        .select(board.count())
+        .from(board);
 
-        if (boardSearchCond.getSearchType() == SearchType.WRITER) {
-            query.join(board.member, member);
-        }
+if (boardSearchCond.getSearchType() == SearchType.WRITER) {
+    query.join(board.member, member);
+}
 
-        JPAQuery<Long> countQuery = query.where(
-                containsKeywordBy(boardSearchCond.getSearchType(), boardSearchCond.getKeyword())
-        );
+JPAQuery<Long> countQuery = query.where(
+        containsKeywordBy(boardSearchCond.getSearchType(), boardSearchCond.getKeyword())
+);
 ```
 - Querydsl 기반 동적 조인
 
@@ -224,6 +226,7 @@ JPAQuery<Long> query = queryFactory
 <br>
 
 #### AWS CloudWatch 대시보드
+<EC2 CPU, Memory 사용률>  
 ![AWS CloudWatch EC2 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/EC2%20-%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0(%EA%B0%9C%EC%84%A0%20%EC%A0%84).png)
 - EC2 서버 2대
     - CPU 사용률 **3.76% 이하**
@@ -231,6 +234,7 @@ JPAQuery<Long> query = queryFactory
 
 <br>
 
+<RDS CPU 사용률, 사용 가능한 메모리양>  
 ![AWS CloudWatch RDS 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/before/RDS%20-%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0(%EA%B0%9C%EC%84%A0%20%EC%A0%84).png)
 - RDS
     - CPU 사용률 **35.6% 이하**
@@ -274,6 +278,7 @@ spring:
 <br>
 
 #### AWS CloudWatch 대시보드
+<EC2 CPU, Memory 사용률>  
 ![AWS CloudWatch EC2 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/connection%20pool/EC2%20-%20%EC%BB%A4%EB%84%A5%EC%85%98%20%ED%92%80%20%ED%99%95%EC%9E%A5%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
 - EC2 서버 2대
     - CPU 사용률 **3.58% 이하**
@@ -281,6 +286,7 @@ spring:
 
 <br>
 
+<RDS CPU 사용률, 사용 가능한 메모리양>  
 ![AWS CloudWatch RDS 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/connection%20pool/RDS%20-%20%EC%BB%A4%EB%84%A5%EC%85%98%20%ED%92%80%20%ED%99%95%EC%9E%A5%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
 - RDS
     - CPU 사용률 **36.5% 이하**
@@ -484,6 +490,7 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 <br>
 
 #### AWS CloudWatch 대시보드
+<EC2 CPU, Memory 사용률>  
 ![AWS CloudWatch EC2 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/EC2%20-%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
 - EC2 서버 2대
     - CPU 사용률 **9.77% 이하**
@@ -491,6 +498,7 @@ Covering index lookup on b using idx_board_deleted_at_created_date_desc (deleted
 
 <br>
 
+<RDS CPU 사용률, 사용 가능한 메모리양>  
 ![AWS CloudWatch RDS 대시보드](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/k6-load-test/image/index/RDS%20-%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20CPU%2C%20Memory%20%EC%82%AC%EC%9A%A9%EB%A5%A0.png)
 - RDS
     - CPU 사용률 **99.6% 이하**
