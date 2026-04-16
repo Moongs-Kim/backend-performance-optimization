@@ -153,6 +153,11 @@ WHERE
 	b.deleted_at IS NULL;
 ```
 
+
+
+### [핵심 코드 바로가기]
+[BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L40-L71)
+
 <br>
 
 ### [부하 테스트 기반 문제 발견]
