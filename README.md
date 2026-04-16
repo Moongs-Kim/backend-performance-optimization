@@ -48,7 +48,7 @@ http://localhost:8080/api/dev/boards?pageIndex=0&sortType=latest_top_n_like_coun
 ### 1. Mock 로그인
 GET
 ```url
-/dev/login-test
+http://localhost:8080/dev/login-test
 ```
 
 → 로그인 상태 생성 후 게시글 목록으로 리다이렉트
@@ -58,7 +58,7 @@ GET
 ### 2. 게시글 화면 확인
 GET
 ```url
-/boards
+http://localhost:8080/boards
 ```
 
 <br>
