@@ -690,7 +690,7 @@ LIMIT 0,10;
 
 <br>
 
-**인라인 뷰 쿼리**  
+**FROM절 서브쿼리(인라인 뷰)**  
 ```sql
 SELECT
 	b.board_id,
@@ -724,7 +724,7 @@ LIMIT 0,10;
 
 |  방법   | 응답 소요 시간 |                                                                                                                                                    측정 시간                                                                                                                                                     | deleted_at 컬럼 인덱스 적용 후 |                                                                                                                                                    측정 시간                                                                                                                                                     |
 |:-----:|:--------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| 인라인 뷰 | 약 1분 15초 |              ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)              |        약 1분 22초        |              ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)              |
+| FROM절 서브쿼리 | 약 1분 15초 |              ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)              |        약 1분 22초        |              ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/inline%20view/%EC%9D%B8%EB%9D%BC%EC%9D%B8%20%EB%B7%B0%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png)              |
 | 상관 서브쿼리 |  약 6.8초   | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%EC%A0%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |         약 11초          | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/correlated%20subquery/%EC%83%81%EA%B4%80%20%EC%84%9C%EB%B8%8C%EC%BF%BC%EB%A6%AC%20%EC%9D%B8%EB%8D%B1%EC%8A%A4%20%EC%A0%81%EC%9A%A9%20%ED%9B%84%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
 
 <br>
@@ -736,10 +736,10 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 <br>
 
-**Explain Analyze를 활용하여 ‘인라인 뷰’와 ‘상관 서브쿼리’를 비교 분석**  
+**Explain Analyze를 활용하여 ‘FROM절 서브쿼리’와 ‘상관 서브쿼리’를 비교 분석**  
 **<공통점>**  
 1. 응답 소요 시간이 긴 이유 → **풀테이블 스캔**
-    - 인라인 뷰
+    - FROM절 서브쿼리
     ```sql
     Table scan on b (actual time=2.96..1449 rows=1e+6 loops=1) 
     ```
@@ -758,7 +758,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 <br>
 
 2. 인덱스를 적용해도 더 느린 이유 → **디스크 랜덤 I/O 발생**
-    - 인라인 뷰
+    - FROM절 서브쿼리
    ```sql
    Index lookup on b using idx_board_deleted_at 
    (deleted_at=NULL), with index condition: (b.deleted_at is null) 
@@ -808,7 +808,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 <br>
 
-2. 인라인 뷰가 더 느린 이유
+2. FROM절 서브쿼리가 더 느린 이유
     ```sql
     Filter: (b.deleted_at is null) (actual time=2.97..1596 rows=899962 loops=1)
     ```
@@ -839,7 +839,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 ### [최종 선택]
 - ‘완전한 좋아요 수 정렬’ 대신 ‘최신 게시글 100건을 기준으로 좋아요 수를 집계’하여 조회하도록 변경
-- Querydsl에서 인라인 뷰 사용 제한으로 인해 쿼리를 ‘최신 게시글 ID 조회’ 와 ‘좋아요 수 집계’ 2단계로 분리
+- Querydsl에서 FROM절 서브쿼리 사용 제한으로 인해 쿼리를 ‘최신 게시글 ID 조회’ 와 ‘좋아요 수 집계’ 2단계로 분리
 
 <br>
 
@@ -890,7 +890,7 @@ CREATE index idx_board_deleted_at_created_date_desc ON board (deleted_at, create
 
 <br>
 
-**최신 게시글 ID 100건을 기준으로 좋아요 수를 집계 코드**
+**최신 게시글 ID 100건을 기준으로 좋아요 수 집계 코드**
 1. Repository
 ```java
 @Query("SELECT new predawn.application.board.dto.BoardListQueryDto" +
@@ -900,7 +900,7 @@ CREATE index idx_board_deleted_at_created_date_desc ON board (deleted_at, create
        " LEFT join (" +
        "      SELECT l.board.id AS boardId, count(l) AS likeCount" +
        "      FROM Like l" +
-       "      WHERE l.board.id in :boardIds" +
+       "      WHERE l.board.id In :boardIds" +
        "      GROUP BY l.board.id" +
        "  ) AS lc ON lc.boardId = b.id" +
        " WHERE b.id IN :boardIds" +
@@ -909,9 +909,9 @@ List<BoardListQueryDto> findTopNOrderByLikeCountDesc(
         @Param("boardIds") List<Long> boardIds, Pageable pageable
 );
 ```
-- Hibernate 6.1 버전 이상 인라인 뷰 적용
+- Hibernate 6.1 버전 이상 FROM절 서브쿼리 적용
 
-▷ [BoardRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardRepository.java#L23-L36)
+▷ [BoardRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardRepository.java#L23-L37)
 
 <br>
 
@@ -921,7 +921,7 @@ List<BoardListQueryDto> findTopNOrderByLikeCountDesc(
 
 <br>
 
-**최신 게시글 ID 100건을 기준으로 좋아요 수를 집계 쿼리**  
+**최신 게시글 ID 100건을 기준으로 좋아요 수 집계 쿼리**  
 ```sql
 SELECT
 	b.board_id,
