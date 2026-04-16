@@ -156,8 +156,51 @@ WHERE
 <br>
 
 #### 게시글 최신순 조회 코드
-- Repository: [BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L40-L86)
-- Service: [BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L98-L122)
+1. Repository
+메인 쿼리 코드
+```java
+List<BoardListQueryDto> content = queryFactory
+                .select(Projections.constructor(BoardListQueryDto.class,
+                            board.id,
+                            board.title,
+                            board.viewCount,
+                            board.createdDate,
+                            member.name
+                        )
+                    )
+                .from(board)
+                .join(board.member, member)
+                .where(containsKeywordBy(boardSearchCond.getSearchType(), boardSearchCond.getKeyword()))
+                .orderBy(sortBy(boardSearchCond.getSortType()), board.id.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+```
+- Querydsl 기반 동적 검색 및 정렬
+
+```java
+JPAQuery<Long> query = queryFactory
+                .select(board.count())
+                .from(board);
+
+        if (boardSearchCond.getSearchType() == SearchType.WRITER) {
+            query.join(board.member, member);
+        }
+
+        JPAQuery<Long> countQuery = query.where(
+                containsKeywordBy(boardSearchCond.getSearchType(), boardSearchCond.getKeyword())
+        );
+```
+- Querydsl 기반 동적 조인
+
+[BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L40-L86)
+
+<br>
+
+2. Service
+
+
+[BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L98-L122)
 
 <br>
 
