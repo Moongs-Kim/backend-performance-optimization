@@ -940,7 +940,8 @@ LEFT JOIN
 		COUNT(l.like_id) 
 	 FROM 
 	 	likes l 
-	 WHERE l.board_id IN (게시글 ID 100개)
+	 WHERE 
+	    l.board_id IN (게시글 ID 100개)
  	 GROUP BY 
  	 	l.board_id
  	) lc(boardId,likeCount) ON lc.boardId = b.board_id 
