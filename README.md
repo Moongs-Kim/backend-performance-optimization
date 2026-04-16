@@ -900,6 +900,7 @@ CREATE index idx_board_deleted_at_created_date_desc ON board (deleted_at, create
        " LEFT join (" +
        "      SELECT l.board.id AS boardId, count(l) AS likeCount" +
        "      FROM Like l" +
+       "      WHERE l.board.id in :boardIds" +
        "      GROUP BY l.board.id" +
        "  ) AS lc ON lc.boardId = b.id" +
        " WHERE b.id IN :boardIds" +
@@ -939,6 +940,7 @@ LEFT JOIN
 		COUNT(l.like_id) 
 	 FROM 
 	 	likes l 
+	 WHERE l.board_id IN (게시글 ID 100개)
  	 GROUP BY 
  	 	l.board_id
  	) lc(boardId,likeCount) ON lc.boardId = b.board_id 
@@ -955,7 +957,7 @@ LIMIT 0, 10;
 
 | 응답 소요 시간 | 측정 시간 |
 |:--------:|:---:|
-| 약 0.067초 | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
+| 약 0.025초 | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%A2%8B%EC%95%84%EC%9A%94%20%EC%88%98%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
 </details>
 
 <br>
@@ -965,7 +967,7 @@ LIMIT 0, 10;
 
 | 기존 좋아요 수 정렬 쿼리 | 최종 좋아요 수 정렬 쿼리 |
 |:--------------:|:--------------:|
-|     약 6.8초     |    약 0.074초    |
+|     약 6.8초     |    약 0.032초     |
 
 <br>
 

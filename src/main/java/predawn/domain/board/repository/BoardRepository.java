@@ -27,6 +27,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
            " LEFT join (" +
            "      SELECT l.board.id AS boardId, count(l) AS likeCount" +
            "      FROM Like l" +
+           "      WHERE l.board.id in :boardIds" +
            "      GROUP BY l.board.id" +
            "  ) AS lc ON lc.boardId = b.id" +
            " WHERE b.id IN :boardIds" +
