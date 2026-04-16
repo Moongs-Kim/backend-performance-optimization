@@ -70,6 +70,21 @@ public class BoardQuerydslRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
+    private BooleanExpression containsKeywordBy(SearchType searchType, String keyword) {
+        return switch (searchType) {
+            case TITLE -> board.title.contains(keyword);
+            case WRITER -> member.name.contains(keyword);
+            case null -> null;
+        };
+    }
+
+    private OrderSpecifier<?> sortBy(SortType sortType) {
+        return switch (sortType) {
+            case SortType.LATEST, SortType.LATEST_TOP_N_LIKE_COUNT -> board.createdDate.desc();
+            case SortType.VIEW_COUNT -> board.viewCount.desc();
+        };
+    }
+
     public List<Long> searchBoardIdsTopNBy(BoardSearchCond boardSearchCond) {
         return queryFactory
                 .select(board.id)
@@ -102,18 +117,5 @@ public class BoardQuerydslRepository {
                 .fetchOne());
     }
 
-    private BooleanExpression containsKeywordBy(SearchType searchType, String keyword) {
-        return switch (searchType) {
-            case TITLE -> board.title.contains(keyword);
-            case WRITER -> member.name.contains(keyword);
-            case null -> null;
-        };
-    }
 
-    private OrderSpecifier<?> sortBy(SortType sortType) {
-        return switch (sortType) {
-            case SortType.LATEST, SortType.LATEST_TOP_N_LIKE_COUNT -> board.createdDate.desc();
-            case SortType.VIEW_COUNT -> board.viewCount.desc();
-        };
-    }
 }
