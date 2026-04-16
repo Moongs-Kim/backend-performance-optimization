@@ -800,7 +800,7 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 <br>
 
-**최신 게시판 ID 100건 조회 코드** 
+**최신 게시판 ID 100건 조회 코드**   
 Repository
 ```java
 public List<Long> searchBoardIdsTopNBy(BoardSearchCond boardSearchCond) {
@@ -816,7 +816,7 @@ public List<Long> searchBoardIdsTopNBy(BoardSearchCond boardSearchCond) {
 ```
 - Querydsl 기반 동적 쿼리
 
-▷ [BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L88-97)
+▷ [BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L73-L97)
 
 <br>
 
