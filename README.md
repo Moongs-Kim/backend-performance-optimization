@@ -68,8 +68,16 @@ http://localhost:8080/boards
 <br>
 
 ## H2 콘솔 접속
-- URL: http://localhost:8080/h2-console
-- JDBC URL: `jdbc:h2:mem:testdb`
+- URL: 
+```url
+http://localhost:8080/h2-console
+```
+
+- JDBC URL: 
+```url
+jdbc:h2:mem:testdb
+```
+
 - Username: `sa`
 - Password: (공백)
 
