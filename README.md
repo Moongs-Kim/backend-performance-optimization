@@ -153,10 +153,11 @@ WHERE
 	b.deleted_at IS NULL;
 ```
 
+<br>
 
-
-### [핵심 코드 바로가기]
-[BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L40-L71)
+#### 게시글 최신순 조회 코드
+- Repository: [BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L40-L86)
+- Service: [BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L98-L122)
 
 <br>
 
