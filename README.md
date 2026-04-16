@@ -800,6 +800,26 @@ CREATE INDEX idx_board_deleted_at ON board (deleted_at);
 
 <br>
 
+**최신 게시판 ID 100건 조회 코드** 
+Repository
+```java
+public List<Long> searchBoardIdsTopNBy(BoardSearchCond boardSearchCond) {
+    return queryFactory
+            .select(board.id)
+            .from(board)
+            .join(board.member, member)
+            .where(containsKeywordBy(boardSearchCond.getSearchType(), boardSearchCond.getKeyword()))
+            .orderBy(sortBy(boardSearchCond.getSortType()), board.id.asc())
+            .limit(LATEST_TOP_COUNT)
+            .fetch();
+}
+```
+- Querydsl 기반 동적 쿼리
+
+▷ [BoardQuerydslRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardQuerydslRepository.java#L88-97)
+
+<br>
+
 **최신 게시판 ID 100건 조회 쿼리**  
 ```sql
 SELECT 
@@ -824,6 +844,36 @@ CREATE index idx_board_deleted_at_created_date_desc ON board (deleted_at, create
 | 응답 소요 시간 | 측정 시간 |
 |:--------:|:---:|
 | 약 0.007초 | ![응답 소요 시간](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/repo/trade-off-base/image/after/%EC%B5%9C%EC%8B%A0%20100%EA%B1%B4%20%EC%86%8C%EC%9A%94%20%EC%8B%9C%EA%B0%84.png) |
+
+<br>
+
+**최신 게시글 ID 100건을 기준으로 좋아요 수를 집계 코드**
+1. Repository
+```java
+@Query("SELECT new predawn.application.board.dto.BoardListQueryDto" +
+       "       (b.id, b.title, b.viewCount, b.createdDate, m.name, lc.likeCount)" +
+       " FROM Board b" +
+       " JOIN b.member m" +
+       " LEFT join (" +
+       "      SELECT l.board.id as boardId, count(l) AS likeCount" +
+       "      FROM Like l" +
+       "      GROUP BY l.board.id" +
+       "  ) AS lc ON lc.boardId = b.id" +
+       " WHERE b.id IN :boardIds" +
+       " ORDER BY lc.likeCount DESC, b.createdDate DESC, b.id")
+List<BoardListQueryDto> findTopNOrderByLikeCountDesc(
+        @Param("boardIds") List<Long> boardIds, Pageable pageable
+);
+```
+- Hibernate 6.1 버전 이상 인라인 뷰 적용
+
+▷ [BoardRepository.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/domain/board/repository/BoardRepository.java#L23-L36)
+
+<br>
+
+2. Service
+
+▷ [BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L124-L137)
 
 <br>
 
