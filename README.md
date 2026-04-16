@@ -121,6 +121,8 @@ export const options = {
 };
 ```
 
+<br>
+
 - 로그인 후 게시글 조회 95%, 작성 5%
 ```javascript
 const random = Math.random();
