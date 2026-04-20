@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: predawn-days
+
+  profiles:
+    active: test
+
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: never
+      table-name: SPRING_SESSION
+
+  datasource:
+    url: jdbc:h2:mem:testdb2;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        format-sql: ture
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  messages:
+    basename: messages, errors
+
+logging.level:
+  org.hibernate:
+    SQL: debug
+    orm.jdbc.bind: trace
+
+local:
+  file:
+    dir: C:/My-Project/upload/
+    view: /upload

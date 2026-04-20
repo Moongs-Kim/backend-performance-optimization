@@ -47,7 +47,7 @@ import predawn.domain.like.exception.LikeUniqueViolationApiException;
 import predawn.domain.like.repository.LikeQuerydslRepository;
 import predawn.domain.like.repository.LikeRepository;
 import predawn.domain.member.entity.Member;
-import predawn.domain.member.exception.AnonymousMemberException;
+import predawn.domain.member.exception.MemberNotFoundException;
 import predawn.domain.member.repository.MemberRepository;
 import predawn.global.pagination.PageInformation;
 
@@ -80,7 +80,7 @@ public class BoardService {
     @Transactional
     public Long postBoard(Long memberId, BoardPostCommand postCommand, List<MultipartFile> attachFiles) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(AnonymousMemberException::new);
+                .orElseThrow(MemberNotFoundException::new);
 
         Category category = categoryRepository.findByCategoryName(postCommand.getCategoryName());
 
