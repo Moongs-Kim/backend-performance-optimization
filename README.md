@@ -1,7 +1,6 @@
+(자세히 보기↓↓)
 <details>
 <summary><h2>실행 방법</h2></summary>
-
-(자세히 보기↓↓)
 
 ### 1. 일반 실행 (소량 데이터)
 - 옵션 없이 바로 실행 가능
@@ -90,13 +89,13 @@ jdbc:h2:mem:testdb
 - Username: `sa`
 - Password: (공백)
 
+</details>
+
 <br>
 
 ---
 
 <br>
-
-</details>
 
 (자세히 보기↓↓)
 
