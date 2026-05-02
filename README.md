@@ -6,6 +6,7 @@
 ```text
 docker compose up -d --build
 ```
+※ Redis가 실행되어야 하기 때문에 Docker 기반으로 실행할 수 있게 구성했습니다. 
 
 <br>
 
