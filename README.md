@@ -10,7 +10,6 @@ docker compose up -d --build
 <br>
 
 ### 2. 대용량 데이터 실행 (성능 테스트)
-- 실행 옵션: 
 ```text
 docker compose -f compose-load.yml up -d --build
 ```
