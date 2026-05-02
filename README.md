@@ -246,7 +246,7 @@ JPAQuery<Long> countQuery = query.where(
 
 2. Service
 
-▷ [BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L98-L122)
+▷ [BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L99-L123)
 
 <br>
 
@@ -881,7 +881,7 @@ List<BoardListQueryDto> findTopNOrderByLikeCountDesc(
 
 2. Service
 
-▷ [BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L124-L137)
+▷ [BoardService.java](https://github.com/Moongs-Kim/backend-performance-optimization/blob/main/src/main/java/predawn/application/board/service/BoardService.java#L125-L138)
 
 <br>
 
