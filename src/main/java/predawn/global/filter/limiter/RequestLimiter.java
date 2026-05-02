@@ -10,7 +10,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RequestLimiter {
     private static final long REQUEST_LIMIT_TIME_MS = 5_000;
-    private static final int MAX_REQUESTS = 15;
+    private static final int MAX_REQUESTS = 30;
 
     private final RequestLimiterRepository requestLimiterRepository;
 

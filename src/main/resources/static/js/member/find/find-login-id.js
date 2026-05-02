@@ -18,6 +18,7 @@ form.addEventListener('submit', e => {
     })
     .then(data => {
         createResponseDiv(data.value);
+        disabledSubmitBtn();
     })
     .catch(err => {
         apiErrorResponse(err, createErrorMessage);
@@ -38,6 +39,11 @@ function createResponseDiv(loginId) {
 
     siblingTag.after(responseTextDiv);
     responseTextDiv.after(responseDiv);
+}
+
+function disabledSubmitBtn() {
+    const submitBtn = document.querySelector("#find-id-btn");
+    submitBtn.disabled = true;
 }
 
 function createErrorMessage(fieldErrors) {
