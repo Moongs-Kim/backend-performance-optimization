@@ -3,15 +3,16 @@
 <summary><h2>실행 방법</h2></summary>
 
 ### 1. 일반 실행 (소량 데이터)
-- 옵션 없이 바로 실행 가능
-- 기본 실행 환경: `dev`
+```text
+docker compose up -d --build
+```
 
 <br>
 
 ### 2. 대용량 데이터 실행 (성능 테스트)
 - 실행 옵션: 
 ```text
---spring.profiles.active=load
+docker compose -f compose-load.yml up -d --build
 ```
 
 ※ load 환경에서는 Java 기반으로 대량 데이터가 생성됩니다. <br>
