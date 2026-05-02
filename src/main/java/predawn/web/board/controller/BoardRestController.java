@@ -28,6 +28,7 @@ import predawn.domain.file.enums.DownloadType;
 import predawn.domain.file.exception.FileNotSelectedException;
 import predawn.domain.file.vo.DownloadFile;
 import predawn.global.error.exception.ValidationException;
+import predawn.infrastructure.redis.BoardRedisRepository;
 import predawn.web.board.dto.BoardPostForm;
 import predawn.web.board.dto.BoardUpdateReqDto;
 import predawn.web.board.mapper.BoardCommandMapper;
@@ -46,8 +47,8 @@ import static predawn.web.member.session.SessionConst.*;
 @RequiredArgsConstructor
 public class BoardRestController {
 
-    private static final int MAX_VIEW_COUNT = 50;
     private final BoardService boardService;
+    private final BoardRedisRepository boardRedisRepository;
 
     @PostMapping("/api/board/write")
     public ResponseEntity<String> boardWrite(
@@ -161,34 +162,12 @@ public class BoardRestController {
     @PostMapping("/api/board/{boardId}/view")
     public void increaseViewCount(
             @PathVariable Long boardId,
-            @SessionAttribute(name = LOGIN_MEMBER, required = false) LoginMember loginMember,
-            HttpServletRequest request,
-            HttpServletResponse response)
-    {
-        Cookie[] cookies = request.getCookies();
-        Cookie boardViewCookie = null;
+            @SessionAttribute(name = LOGIN_MEMBER) LoginMember loginMember
+    ) {
+        Boolean isSaved = boardRedisRepository.saveViewIfNotExists(boardId, loginMember.getId());
 
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("boardView".equals(cookie.getName())) {
-                    boardViewCookie = cookie;
-                    break;
-                }
-            }
-        }
-
-        if (boardViewCookie == null || !boardViewCookie.getValue().contains("[" + boardId + "]")) {
-            boardService.incrementViewCount(boardId, (loginMember != null) ? loginMember.getId() : null);
-
-            String newValue = (boardViewCookie == null)
-                    ? "[" + boardId + "]"
-                    : updateCookieValue(boardViewCookie.getValue(), boardId);
-
-            Cookie newCookie = new Cookie("boardView", newValue);
-            newCookie.setPath("/");
-            newCookie.setMaxAge(60 * 60 * 24);
-
-            response.addCookie(newCookie);
+        if (isSaved) {
+            boardService.incrementViewCount(boardId, loginMember.getId());
         }
     }
 
@@ -196,20 +175,6 @@ public class BoardRestController {
         return (likeToggleResult == null)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(likeToggleResult);
-    }
-
-    private String updateCookieValue(String oldValue, Long boardId) {
-        List<String> ids = new ArrayList<>(List.of(oldValue.split("_")));
-
-        String newId = "[" + boardId + "]";
-
-        ids.add(newId);
-
-        if (ids.size() > MAX_VIEW_COUNT) {
-            ids = ids.subList(ids.size() - MAX_VIEW_COUNT, ids.size());
-        }
-
-        return String.join("_", ids);
     }
 
     @Getter

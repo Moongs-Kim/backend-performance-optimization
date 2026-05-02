@@ -1,0 +1,23 @@
+FROM gradle:8.5-jdk21 AS build
+
+WORKDIR /app
+
+COPY build.gradle settings.gradle ./
+COPY gradle ./gradle
+
+RUN ./gradlew build -x test || true
+
+COPY . .
+RUN ./gradlew build -x test
+
+
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /predawn-days
+
+COPY --from=build /app/build/libs/*SNAPSHOT.jar ./predawn-days.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "/predawn-days/predawn-days.jar", "--spring.profiles.active=dev"]
+

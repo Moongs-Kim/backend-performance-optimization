@@ -7,4 +7,8 @@ public class BadRequestException extends BusinessException {
     public BadRequestException(Throwable cause) {
         super(ErrorCode.BAD_REQUEST, cause);
     }
+
+    public BadRequestException() {
+        super(ErrorCode.BAD_REQUEST);
+    }
 }

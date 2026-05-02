@@ -15,6 +15,10 @@ public class BusinessException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    public BusinessException(Throwable cause) {
+        this(ErrorCode.INTERNAL_SERVER_ERROR, cause);
+    }
+
     public ErrorCode getErrorCode() {
         return errorCode;
     }

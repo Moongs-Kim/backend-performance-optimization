@@ -3,24 +3,31 @@ package predawn.web.board.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import predawn.application.board.service.BoardService;
+import predawn.global.filter.limiter.RequestLimiter;
+import predawn.infrastructure.redis.BoardRedisRepository;
 import predawn.web.member.session.LoginMember;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static predawn.web.member.session.SessionConst.LOGIN_MEMBER;
 
 @WebMvcTest(controllers = BoardRestController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class BoardRestControllerTest {
 
     @Autowired
@@ -28,6 +35,12 @@ class BoardRestControllerTest {
 
     @MockitoBean
     private BoardService boardService;
+
+    @MockitoBean
+    private BoardRedisRepository boardRedisRepository;
+
+    @MockitoBean
+    private RequestLimiter requestLimiter;
 
     @DisplayName("첨부파일 없이 게시글을 등록한다")
     @Test
@@ -198,5 +211,56 @@ class BoardRestControllerTest {
         then(boardService)
                 .should(never())
                 .postBoard(any(), any(), any());
+    }
+
+    @DisplayName("게시글 조회 기록이 남아있지 않으면 조회수 증가 메소드가 실행된다")
+    @Test
+    void increaseViewCount() throws Exception {
+        //Given
+        given(boardRedisRepository.saveViewIfNotExists(anyLong(), anyLong()))
+                .willReturn(true);
+
+        willDoNothing().given(boardService).incrementViewCount(anyLong(), anyLong());
+
+        //When //Then
+        mockMvc.perform(post("/api/board/1/view")
+                        .sessionAttr(LOGIN_MEMBER, new LoginMember(1L, "user", null))
+                )
+                .andExpect(status().isOk());
+
+        then(boardService)
+                .should(times(1))
+                .incrementViewCount(anyLong(), anyLong());
+    }
+
+    @DisplayName("게시글 조회 기록이 남아있으면 조회수 증가 메소드가 실행되지 않는다")
+    @Test
+    void increaseViewCount_Fail() throws Exception {
+        //Given
+        given(boardRedisRepository.saveViewIfNotExists(anyLong(), anyLong()))
+                .willReturn(false);
+
+        willDoNothing().given(boardService).incrementViewCount(anyLong(), anyLong());
+
+        //When //Then
+        mockMvc.perform(post("/api/board/1/view")
+                        .sessionAttr(LOGIN_MEMBER, new LoginMember(1L, "user", null))
+                )
+                .andExpect(status().isOk());
+
+        then(boardService)
+                .should(never())
+                .incrementViewCount(anyLong(), anyLong());
+    }
+
+    @DisplayName("URL에 잘못된 게시글 ID를 입력하면 ")
+    @Test
+    void increaseViewCount_FailByWrongURL() throws Exception {
+        //Given //When //Then
+        mockMvc.perform(post("/api/board/NOT-NUMBER/view")
+                        .sessionAttr(LOGIN_MEMBER, new LoginMember(1L, "user", null))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentTypeMismatchException));
     }
 }

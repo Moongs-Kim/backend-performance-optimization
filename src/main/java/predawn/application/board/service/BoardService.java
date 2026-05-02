@@ -55,6 +55,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -249,21 +250,17 @@ public class BoardService {
         boardRepository.findById(boardId)
                 .orElseThrow(BoardNotFoundException::new);
 
-        boolean canIncrease = true;
-        if (memberId != null) {
-            BoardViewHistory boardViewHistory = boardViewRepository.findByMemberIdAndBoardId(memberId, boardId);
+        boardRepository.increaseViewCount(boardId);
 
-            if (boardViewHistory == null) {
-                Member member = em.getReference(Member.class, memberId);
-                Board board = em.getReference(Board.class, boardId);
-                boardViewRepository.save(new BoardViewHistory(member, board, LocalDateTime.now()));
-            } else {
-                LocalDateTime viewAt = boardViewHistory.getViewAt();
-                canIncrease = viewAt.plusHours(24).isBefore(LocalDateTime.now());
-            }
-        }
+        Optional<BoardViewHistory> possibleBoardViewHistory = boardViewRepository.findByBoardIdAndMemberId(boardId, memberId);
 
-        if (canIncrease) boardRepository.increaseViewCount(boardId);
+        Member member = em.getReference(Member.class, memberId);
+        Board board = em.getReference(Board.class, boardId);
+
+        possibleBoardViewHistory.ifPresentOrElse(
+                boardViewHistory -> boardViewHistory.changeViewAt(LocalDateTime.now()),
+                () -> boardViewRepository.save(new BoardViewHistory(member, board, LocalDateTime.now()))
+        );
     }
 
     @Transactional
@@ -320,7 +317,7 @@ public class BoardService {
         return uploadFiles;
     }
 
-    private static void likeCountNullToZero(List<BoardListQueryDto> boardListQueryDtos) {
+    private void likeCountNullToZero(List<BoardListQueryDto> boardListQueryDtos) {
         for (BoardListQueryDto boardListQueryDto : boardListQueryDtos) {
             if (boardListQueryDto.getLikeCount() == null) {
                 boardListQueryDto.applyLikeCount(0L);
@@ -328,7 +325,7 @@ public class BoardService {
         }
     }
 
-    private static void boardUpdate(Board board, Category category, BoardUpdateCommand boardUpdateCommand) {
+    private void boardUpdate(Board board, Category category, BoardUpdateCommand boardUpdateCommand) {
         try {
             board.changeContent(boardUpdateCommand.getTitle(), boardUpdateCommand.getContent());
             board.changeBoardOpen(boardUpdateCommand.getBoardOpen());

@@ -2,9 +2,11 @@ package predawn.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 import predawn.domain.common.BaseTimeEntity;
 import predawn.domain.file.entity.UploadFile;
 import predawn.domain.member.enums.Gender;
+import predawn.domain.member.exception.PasswordEmptyException;
 
 import java.time.LocalDate;
 
@@ -44,5 +46,10 @@ public class Member extends BaseTimeEntity {
         this.email = email;
         this.address = address;
         this.profileImage = profileImage;
+    }
+
+    public void changePassword(String newPassword) {
+        if (!StringUtils.hasText(newPassword)) throw new PasswordEmptyException();
+        this.password = newPassword;
     }
 }

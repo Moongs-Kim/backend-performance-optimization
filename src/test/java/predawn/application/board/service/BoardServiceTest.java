@@ -1,5 +1,6 @@
 package predawn.application.board.service;
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,10 +18,13 @@ import predawn.application.board.dto.BoardPostCommand;
 import predawn.application.board.dto.BoardSearchCond;
 import predawn.application.file.enums.RootDirectory;
 import predawn.domain.board.entity.Board;
+import predawn.domain.board.entity.BoardViewHistory;
 import predawn.domain.board.entity.Category;
 import predawn.domain.board.enums.BoardOpen;
 import predawn.domain.board.enums.CategoryName;
+import predawn.domain.board.exception.BoardNotFoundException;
 import predawn.domain.board.repository.BoardRepository;
+import predawn.domain.board.repository.BoardViewHistoryRepository;
 import predawn.domain.board.repository.CategoryRepository;
 import predawn.domain.file.repository.FileStorage;
 import predawn.domain.file.vo.StoredFile;
@@ -31,9 +35,11 @@ import predawn.domain.member.repository.MemberRepository;
 import predawn.global.pagination.PageInformation;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -47,6 +53,9 @@ import static org.mockito.BDDMockito.then;
 class BoardServiceTest {
 
     @Autowired
+    private EntityManager em;
+
+    @Autowired
     private BoardService boardService;
 
     @Autowired
@@ -57,6 +66,9 @@ class BoardServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private BoardViewHistoryRepository boardViewHistoryRepository;
 
     @MockitoBean
     private FileStorage fileStorage;
@@ -162,6 +174,91 @@ class BoardServiceTest {
 
         assertThat(likeCounts).doesNotContainNull();
         assertThat(likeCounts.stream().allMatch(count -> count >= 0)).isTrue();
+    }
+
+    @DisplayName("게시글 조회수 증가 메소드를 실행하면 조회수가 1개 증가한다")
+    @Test
+    void incrementViewCount() {
+        //Given
+        Member member = memberRepository.findMemberByLoginId("user1");
+        Board board = boardRepository.findAll().stream()
+                .findAny().get();
+
+        Long boardId = board.getId();
+        Long memberId = member.getId();
+
+        Board beforeBoard = boardRepository.findById(boardId).get();
+        int beforeViewCount = beforeBoard.getViewCount();
+
+        //When
+        boardService.incrementViewCount(boardId, memberId);
+
+        em.flush();
+        em.clear();
+
+        //Then
+        Board afterBoard = boardRepository.findById(boardId).get();
+
+        assertThat(beforeViewCount).isNotEqualTo(afterBoard.getViewCount());
+        assertThat(beforeViewCount).isEqualTo(afterBoard.getViewCount() - 1);
+    }
+
+    @DisplayName("게시글 조회수 증가 메소드를 실행시 게시글을 찾을 수 없으면 예외가 발생한다")
+    @Test
+    void incrementViewCount_BoardNotFound() {
+        //Given
+        Long notExistsBoardId = 999L;
+        Long memberId = 1L;
+
+        //When //Then
+        assertThrows(BoardNotFoundException.class, () -> boardService.incrementViewCount(notExistsBoardId, memberId));
+    }
+
+    @DisplayName("게시글 조회수 증가 메소드를 실행시 BoardViewHistory Row가 없으면 Insert 한다")
+    @Test
+    void incrementViewCount_InsertBoardViewHistory() {
+        //Given
+        Member member = memberRepository.findMemberByLoginId("user1");
+        Board board = boardRepository.findAll().stream()
+                .findAny().get();
+
+        Long boardId = board.getId();
+        Long memberId = member.getId();
+        Long boardViewHistoryId = 1L;
+
+        //When
+        boardService.incrementViewCount(boardId, memberId);
+
+        //Then
+        Optional<BoardViewHistory> possibleBoardViewHistory = boardViewHistoryRepository.findById(boardViewHistoryId);
+
+        assertThat(possibleBoardViewHistory.isPresent()).isTrue();
+    }
+
+    @DisplayName("게시글 조회수 증가 메소드를 실행시 BoardViewHistory Row가 있으면 Update 한다")
+    @Test
+    void incrementViewCount_UpdateBoardViewHistory() {
+        //Given
+        Member member = memberRepository.findMemberByLoginId("user1");
+        Board board = boardRepository.findAll().stream()
+                .findAny().get();
+
+        Long boardId = board.getId();
+        Long memberId = member.getId();
+
+        LocalDateTime beforeViewAt = LocalDateTime.of(2000, 01, 01, 0, 0, 0);
+
+        BoardViewHistory boardViewHistory = new BoardViewHistory(member, board, beforeViewAt);
+
+        boardViewHistoryRepository.save(boardViewHistory);
+
+        //When
+        boardService.incrementViewCount(boardId, memberId);
+
+        //Then
+        BoardViewHistory findBoardViewHistory = boardViewHistoryRepository.findById(boardViewHistory.getId()).get();
+
+        assertThat(findBoardViewHistory.getViewAt()).isNotEqualTo(beforeViewAt);
     }
 
     private List<Board> createBoards(Member member, Category category) {

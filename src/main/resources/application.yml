@@ -27,6 +27,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+      settings:
+        web-allow-others: true
 
   sql:
     init:
@@ -41,6 +43,11 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
 
+  data:
+    redis:
+      host: redis-server
+      port: 6379
+
   servlet:
     multipart:
       max-file-size: 5MB
@@ -51,7 +58,7 @@ spring:
 
 local:
   file:
-    dir: C:/My-Project/upload/
+    dir: /
     view: /upload
 
 ---

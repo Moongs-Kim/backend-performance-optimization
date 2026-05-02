@@ -95,6 +95,16 @@ public class MemberController {
         return "redirect:/login";
     }
 
+    @GetMapping("/member/find-id")
+    public String findMemberLoginIdPage() {
+        return "member/find-login-id";
+    }
+
+    @GetMapping("/member/password-reset")
+    public String passwordResetPage() {
+        return "member/password-reset";
+    }
+
     @ModelAttribute("genders")
     private Gender[] genders() {
         return Gender.values();

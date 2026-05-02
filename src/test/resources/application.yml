@@ -27,7 +27,6 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
 
-
   jpa:
     hibernate:
       ddl-auto: none
@@ -36,6 +35,11 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
         format-sql: ture
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   servlet:
     multipart:
@@ -52,5 +56,5 @@ logging.level:
 
 local:
   file:
-    dir: C:/My-Project/upload/
+    dir: /
     view: /upload

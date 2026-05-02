@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragment/base-layout :: base-layout(
+            ~{::title}, ~{::link}, ~{::script}, ~{::div[@class='container']})}">
+<head>
+    <title>Predawn Days Login</title>
+    <link rel="stylesheet" th:href="@{/css/member/find-login-id.css}">
+    <link rel="stylesheet" th:href="@{/css/common/not-main-footer.css}">
+    <script th:src="@{/js/member/find/find-login-id.js}" defer></script>
+</head>
+<body>
+<div class="container">
+    <div class="box">
+
+        <div class="logo">
+            <a href="/" th:text="'Predawn Days'">LOGO</a>
+        </div>
+
+        <form class="post-form">
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input id="email" type="email" placeholder="가입한 이메일을 입력하세요">
+            </div>
+
+            <button type="submit" id="find-id-btn">아이디 찾기</button>
+        </form>
+
+        <div class="links">
+            <a href="/login">로그인</a><span>|</span>
+            <a href="/member/password-reset">비밀번호 찾기</a><span>|</span>
+            <a href="/signup">회원가입</a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

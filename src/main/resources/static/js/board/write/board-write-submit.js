@@ -3,7 +3,7 @@ const form = document.querySelector('.post-form');
 form.addEventListener('submit', e => {
     e.preventDefault();
 
-    deleteErrorSpan()
+    deleteErrorSpan();
 
     const formData = new FormData(form);
 

@@ -3,6 +3,7 @@ package predawn.web.board.controller;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -10,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import predawn.application.board.dto.BoardListQueryDto;
 import predawn.application.board.dto.BoardSearchCond;
 import predawn.application.board.service.BoardService;
+import predawn.global.filter.limiter.RequestLimiter;
 import predawn.global.pagination.PageInformation;
 import predawn.web.member.session.LoginMember;
 
@@ -22,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static predawn.web.member.session.SessionConst.LOGIN_MEMBER;
 
 @WebMvcTest(controllers = BoardController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class BoardControllerTest {
 
     @Autowired
@@ -29,6 +32,9 @@ class BoardControllerTest {
 
     @MockitoBean
     private BoardService boardService;
+
+    @MockitoBean
+    private RequestLimiter requestLimiter;
 
     @DisplayName("게시글 작성 페이지를 가져온다")
     @Test

@@ -34,4 +34,8 @@ public class BoardViewHistory extends BaseTimeEntity {
         this.board = board;
         this.viewAt = viewAt;
     }
+
+    public void changeViewAt(LocalDateTime recentViewTime) {
+        viewAt = recentViewTime;
+    }
 }
