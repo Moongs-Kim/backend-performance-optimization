@@ -15,6 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class RequestLimiterTest {
 
+    private static final int MAX_REQUESTS = 30;
+
     @Autowired
     private RequestLimiter requestLimiter;
 
@@ -64,14 +66,14 @@ class RequestLimiterTest {
     }
 
     private void addZSetsLessThenOneLimit(String clientIp) {
-        for (int i = 1; i <= 14; i++) {
+        for (int i = 1; i <= MAX_REQUESTS - 1; i++) {
             String requestId = "requestId" + i;
             requestLimiter.allow(clientIp);
         }
     }
 
     private void addZSetsEqualsToLimit(String clientIp) {
-        for (int i = 1; i <= 15; i++) {
+        for (int i = 1; i <= MAX_REQUESTS; i++) {
             String requestId = "requestId" + i;
             requestLimiter.allow(clientIp);
         }

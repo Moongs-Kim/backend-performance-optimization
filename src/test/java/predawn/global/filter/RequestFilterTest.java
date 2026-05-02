@@ -16,6 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class RequestFilterTest {
 
+    private static final int MAX_REQUESTS = 30;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -34,7 +36,7 @@ class RequestFilterTest {
     @DisplayName("요청 제한을 넘어서면 429 too many requests 응답이 온다")
     @Test
     void doFilterInternal_TooManyRequests() throws Exception {
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < MAX_REQUESTS; i++) {
             mockMvc.perform(post("/login"))
                     .andExpect(status().isOk());
         }
@@ -46,7 +48,7 @@ class RequestFilterTest {
     @DisplayName("요청 제한을 넘어서지 않으면 정상 응답한다")
     @Test
     void doFilterInternal() throws Exception {
-        for (int i = 0; i < 14; i++) {
+        for (int i = 0; i < MAX_REQUESTS - 1; i++) {
             mockMvc.perform(post("/login"))
                     .andExpect(status().isOk());
         }
